@@ -4,7 +4,7 @@
 // Our includes
 #include "inc\defines.h"
 #include "inc\DirectXComponent.h"
-#include "inc\ShaderComponent.h"
+#include "inc\VertexShaderComponent.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")

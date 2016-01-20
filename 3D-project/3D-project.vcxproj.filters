@@ -21,7 +21,7 @@
     <ClCompile Include="src\DirectXComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShaderComponent.cpp">
+    <ClCompile Include="src\VertexShaderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClInclude Include="src\inc\DirectXComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\inc\ShaderComponent.h">
+    <ClInclude Include="src\inc\VertexShaderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

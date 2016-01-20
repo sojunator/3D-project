@@ -1,6 +1,6 @@
-#include "inc\ShaderComponent.h"
+#include "inc\VertexShaderComponent.h"
 
-ShaderComponent::ShaderComponent(LPCWSTR shadername, LPCSTR shadermain, LPCSTR shadertype)
+VertexShaderComponent::VertexShaderComponent(LPCWSTR shadername, LPCSTR shadermain, LPCSTR shadertype, ID3D11Device* gDev, ID3D11DeviceContext* gDevCon)
 {
 	HRESULT hr;
 	hr = D3DCompileFromFile(
@@ -33,11 +33,7 @@ ShaderComponent::ShaderComponent(LPCWSTR shadername, LPCSTR shadermain, LPCSTR s
 		}
 	}
 
-	switch (shadertype[0])
-	{
-	case 'p':
-		
-		break;
-	}
+
+	gDev->CreateVertexShader(shader->GetBufferPointer(), shader->GetBufferSize(), NULL, &pVS);
 
 }
