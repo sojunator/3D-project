@@ -3,23 +3,24 @@
 
 // Our includes
 #include "inc\defines.h"
-#include "inc\DirectXComponent.h"
-#include "inc\VertexShaderComponent.h"
+#include "inc\System.h"
 
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "d3dcompiler.lib")
-
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 
 HWND InitWindow(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg = { 0 };
 
 	HWND wndHandle = InitWindow(hInstance);
-
-	DirectxComponent* d3dComponent = new DirectxComponent(wndHandle);
+	// Create our system class
+	System* controller = new System(wndHandle);
 
 	if (wndHandle)
 	{
@@ -38,7 +39,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 
 		DestroyWindow(wndHandle);
-		free(d3dComponent);
 	}
 
 	return (int)msg.wParam;

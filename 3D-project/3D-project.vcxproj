@@ -19,14 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\DirectXComponent.cpp" />
+    <ClCompile Include="src\D3DClass.cpp" />
+    <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\VertexShaderComponent.cpp" />
+    <ClCompile Include="src\System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\inc\D3DClass.h" />
     <ClInclude Include="src\inc\defines.h" />
-    <ClInclude Include="src\inc\DirectXComponent.h" />
-    <ClInclude Include="src\inc\VertexShaderComponent.h" />
+    <ClInclude Include="src\inc\Graphic.h" />
+    <ClInclude Include="src\inc\System.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{38ABDADB-FD67-4093-B532-B7BDA6B4FAE9}</ProjectGuid>
