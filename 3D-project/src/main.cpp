@@ -34,7 +34,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			}
 			else
 			{
-
+				controller->Update();
+				controller->Render();
 			}
 		}
 

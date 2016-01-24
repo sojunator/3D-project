@@ -9,9 +9,12 @@ class System
 {
 public:
 	System(HWND wndHandle);
+	bool Render();
+	bool Update();
+	void DeltaTime();
 private:
 	~System();
-
+	float dt;
 	HWND wndHandle;
 	HINSTANCE m_hinstance;
 	Graphics* m_Graphics = 0;

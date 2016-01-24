@@ -13,8 +13,8 @@ class Graphics
 {
 public:
 	Graphics(HWND wndHandle);
-	bool render();
-	bool update();
+	bool Render(float dt);
+	bool Update(float dt);
 
 private:
 	D3DClass* m_DirectX;
