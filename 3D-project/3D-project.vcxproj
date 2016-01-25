@@ -23,6 +23,7 @@
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\ShaderClass.cpp" />
     <ClCompile Include="src\System.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -30,7 +31,28 @@
     <ClInclude Include="src\inc\defines.h" />
     <ClInclude Include="src\inc\Graphic.h" />
     <ClInclude Include="src\inc\Model.h" />
+    <ClInclude Include="src\inc\ShaderClass.h" />
     <ClInclude Include="src\inc\System.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\hlsl\PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS_main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PS_main</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\VertexShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS_main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS_main</EntryPointName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{38ABDADB-FD67-4093-B532-B7BDA6B4FAE9}</ProjectGuid>

@@ -8,6 +8,7 @@
 // our header files
 #include "defines.h"
 #include "D3DClass.h"
+#include "Model.h"
 
 class Graphics
 {
