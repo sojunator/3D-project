@@ -14,7 +14,15 @@ public:
 	void PresentScene();
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
+
+	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
+	void GetWorldMatrix(DirectX::XMMATRIX& worldMAtrix);
+	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
+
 private:
+	bool m_vsync_enabled;
+	int m_videoCardMemory;
+	char m_videoCardDesc[128];
 	~D3DClass();
 	HWND m_handle;
 	IDXGISwapChain* m_swapChain = 0;

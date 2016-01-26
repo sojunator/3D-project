@@ -36,6 +36,9 @@
     <ClCompile Include="src\ShaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CameraClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inc\defines.h">
@@ -56,12 +59,15 @@
     <ClInclude Include="src\inc\ShaderClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\inc\CameraClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\hlsl\PixelShader.hlsl">
+    <FxCompile Include="src\hlsl\VertexShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="src\hlsl\VertexShader.hlsl">
+    <FxCompile Include="src\hlsl\PixelShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

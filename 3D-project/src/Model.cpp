@@ -58,10 +58,11 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 
 	D3D11_BUFFER_DESC indexBufferDesc;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned int) * m_indexCount;
+	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.StructureByteStride = 0;
+	indexBufferDesc.MiscFlags = 0;
 
 	// Copy the data
 	D3D11_SUBRESOURCE_DATA indexData;
@@ -72,7 +73,7 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 	hr = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(hr))
 	{
-		MessageBox(NULL, L"Failed to create index", L"BRRRR2RTT", MB_OK);
+		MessageBox(NULL, L"Failed to create index buffer", L"BRRRR2RTT", MB_OK);
 		return false;
 	}
 
