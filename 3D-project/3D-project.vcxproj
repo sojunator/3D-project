@@ -22,6 +22,7 @@
     <ClCompile Include="src\CameraClass.cpp" />
     <ClCompile Include="src\D3DClass.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
+    <ClCompile Include="src\InputClass.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\ShaderClass.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="src\inc\D3DClass.h" />
     <ClInclude Include="src\inc\defines.h" />
     <ClInclude Include="src\inc\Graphic.h" />
+    <ClInclude Include="src\inc\InputClass.h" />
     <ClInclude Include="src\inc\Model.h" />
     <ClInclude Include="src\inc\ShaderClass.h" />
     <ClInclude Include="src\inc\System.h" />

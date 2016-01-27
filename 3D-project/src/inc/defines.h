@@ -9,9 +9,5 @@
 #define W_HEIGHT 800
 #define W_WITDH 600 
 
-enum shadertype
-{
-	VERTEX, PIXEL, GEOMETRY
-};
 
 #endif

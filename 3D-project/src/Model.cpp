@@ -20,14 +20,14 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 
 	// Left bottom
 	vertices[0].position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	vertices[0].color = DirectX::XMFLOAT4(0.3f, 0.2f, 0.6f, 1.0f);
+	vertices[0].color = DirectX::XMFLOAT4(1.0f, 0.2f, 0.6f, 1.0f);
 
 	// Top
 	vertices[1].position = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-	vertices[1].color = DirectX::XMFLOAT4(0.3f, 0.2f, 0.6f, 1.0f);
+	vertices[1].color = DirectX::XMFLOAT4(0.3f, 1.0f, 0.6f, 1.0f);
 
 	vertices[2].position = DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f);
-	vertices[2].color = DirectX::XMFLOAT4(0.3f, 0.2f, 0.6f, 1.0f);
+	vertices[2].color = DirectX::XMFLOAT4(0.3f, 0.2f, 1.0f, 1.0f);
 
 	// Configure index
 	indices[0] = 0;

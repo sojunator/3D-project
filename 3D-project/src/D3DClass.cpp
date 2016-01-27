@@ -77,7 +77,6 @@ bool D3DClass::Intialize()
 	adapter = 0;
 
 
-
 	// creating our swap chain and devices
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(scd));

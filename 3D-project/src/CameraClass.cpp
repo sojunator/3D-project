@@ -26,10 +26,13 @@ void CameraClass::SetRotation(float x, float y, float z)
 	m_rotationZ = z;
 }
 
-DirectX::XMFLOAT3 CameraClass::GetRotation()
+void CameraClass::GetPosition(float arr[3])
 {
-	return DirectX::XMFLOAT3(m_positionX, m_rotationY, m_rotationZ);
+	arr[0] = m_positionX;
+	arr[1] = m_positionY;
+	arr[2] = m_positionZ;
 }
+
 
 void CameraClass::Render()
 {
@@ -56,13 +59,13 @@ void CameraClass::Render()
 	// Setup where the camera is looking
 	lookAt.x = 0.0f;
 	lookAt.y = 0.0f;
-	lookAt.z = 1.0f;
+	lookAt.z = 5.0f;
 
 	lookAtVector = DirectX::XMLoadFloat3(&lookAt);
 
 	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
 	pitch = m_rotationX * 0.0174532925f;
-	yaw = m_rotationY * 0.0174532925f;
+	yaw = m_positionY * 0.0174532925f;
 	roll = m_rotationZ * 0.0174532925f;
 
 	// Create our rotation matrix
@@ -78,7 +81,6 @@ void CameraClass::Render()
 	// Finally create the view matrix from the three updated vectors
 	m_viewMatrix = DirectX::XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
 
-	int bajsapa = 0;
 }
 
 void CameraClass::GetViewMatrix(DirectX::XMMATRIX& viewMatrix)

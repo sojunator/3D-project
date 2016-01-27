@@ -4,6 +4,7 @@
 // Our includes
 #include "inc\defines.h"
 #include "inc\System.h"
+#include "inc\InputClass.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -12,7 +13,8 @@
 HWND InitWindow(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-
+// Create our input handler
+InputClass inputHandler;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -20,7 +22,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	HWND wndHandle = InitWindow(hInstance);
 	// Create our system class
-	System* controller = new System(wndHandle);
+	System* controller = new System(wndHandle, &inputHandler);
+
 
 	if (wndHandle)
 	{
@@ -85,5 +88,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return inputHandler.MessageHandler(hWnd, message, wParam, lParam);
 }

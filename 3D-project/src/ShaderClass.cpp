@@ -114,6 +114,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		MessageBox(hwnd, L"Failed to create constant buffer", L"THESE WORMS", MB_OK);
 	}
 
+
 	return true;
 
 }

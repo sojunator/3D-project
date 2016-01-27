@@ -10,8 +10,8 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetRotation(float x, float y, float z);
 
-	DirectX::XMFLOAT3 GetPosition();
-	DirectX::XMFLOAT3 GetRotation();
+	void GetPosition(float arr[3]);
+	void GetRotation(float& arr);
 
 	void Render();
 	void GetViewMatrix(DirectX::XMMATRIX& view);
