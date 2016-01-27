@@ -83,10 +83,12 @@ bool D3DClass::Intialize()
 	ZeroMemory(&scd, sizeof(scd));
 
 	scd.BufferCount = 1;
+	scd.BufferDesc.Height = (float)W_HEIGHT;
+	scd.BufferDesc.Width = (float)W_WITDH;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	scd.OutputWindow = m_handle;
-	scd.SampleDesc.Count = 4; // AA times 4
+	scd.SampleDesc.Count = 1; // AA times 4
 	scd.SampleDesc.Quality = 0;
 	scd.Windowed = TRUE;
 	scd.BufferDesc.RefreshRate.Numerator = 0; // change 0 to numerator for vsync
@@ -143,6 +145,7 @@ bool D3DClass::Intialize()
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
+
 	// create the texture for the z-buffer
 	hr = m_Device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
 	if (FAILED(hr))
@@ -188,7 +191,7 @@ bool D3DClass::Intialize()
 	if (FAILED(hr))
 		MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
 
-	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, NULL); // Disabled z buffer for now m_depthStencilView
+	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView); // Disabled z buffer for now m_depthStencilView
 
 	 //Configure rasterizer
 	D3D11_RASTERIZER_DESC rasterDesc;
