@@ -11,7 +11,7 @@ public:
 	bool IsKeyPressed(unsigned int key);
 	void keyUp(unsigned int key);
 	void keyDown(unsigned int key);
-	LPPOINT DeltaPosMouse(HWND handle);
+	POINT mousePos(HWND handle);
 	void SetHandle(HWND handle)
 	{
 		m_handle = handle;

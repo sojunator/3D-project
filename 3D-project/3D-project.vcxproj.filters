@@ -68,6 +68,9 @@
     <ClInclude Include="src\inc\InputClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\inc\ObjLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\hlsl\VertexShader.hlsl">

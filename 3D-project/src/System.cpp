@@ -1,6 +1,10 @@
 #include "inc\System.h"
 #include "inc\Graphic.h"
 #include "inc\InputClass.h"
+#include <mmsystem.h>
+
+
+#pragma comment(lib, "Winmm.lib")
 
 System::System(HWND handle, InputClass* inputHandle)
 {
@@ -12,7 +16,7 @@ System::System(HWND handle, InputClass* inputHandle)
 
 bool System::Render()
 {
-	m_Graphics->Render(dt, wasd, m_InputHandler->DeltaPosMouse(wndHandle));
+	m_Graphics->Render(dt, wasd, m_InputHandler->mousePos(wndHandle));
 	return true;
 }
 bool System::Update()
@@ -33,5 +37,12 @@ void System::checkKeyStrokes()
 
 void System::DeltaTime()
 {
-	this->dt += 0.001f;
+	DWORD newTime = timeGetTime();
+	dt = (float)(newTime - oldTime) / 1000;
+	oldTime = newTime;
+}
+
+void System::shutDown()
+{
+	//m_Graphics->Shutdown();
 }

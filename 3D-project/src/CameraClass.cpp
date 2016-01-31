@@ -10,6 +10,9 @@ CameraClass::CameraClass()
 	m_rotationX = 0.0f;
 	m_rotationY = 0.0f;
 	m_rotationZ = 0.0f;
+
+	lastMousePos.x = 400;
+	lastMousePos.y = 300;
 }
 
 void CameraClass::SetPosition(float x, float y, float z)
@@ -34,13 +37,13 @@ void CameraClass::GetPosition(float arr[3])
 }
 
 
-void CameraClass::Render()
+void CameraClass::Render(POINT mousePos)
 {
 	DirectX::XMFLOAT3 up, position, lookAt;
 	DirectX::XMVECTOR upVector, positionVector, lookAtVector;
 	DirectX::XMMATRIX rotationMatrix;
-	float yaw, pitch, roll;
-
+	float yaw = 0, pitch = 0, roll = 0;
+	float sensitivity = 0.0004;
 	// upwards vector
 	up.x = 0.0f;
 	up.y = 1.0f;
@@ -63,10 +66,18 @@ void CameraClass::Render()
 
 	lookAtVector = DirectX::XMLoadFloat3(&lookAt);
 
-	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
-	pitch = m_rotationX * 0.0174532925f;
-	yaw = m_positionY * 0.0174532925f;
+	float xoffset = (lastMousePos.x - mousePos.x) * sensitivity;
+	float yoffset = (lastMousePos.y - mousePos.y) * sensitivity;
+	/*lastMousePos = mousePos;*/
+
+	pitch += yoffset;
+	yaw += xoffset;
 	roll = m_rotationZ * 0.0174532925f;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
 
 	// Create our rotation matrix
 	rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
@@ -81,9 +92,43 @@ void CameraClass::Render()
 	// Finally create the view matrix from the three updated vectors
 	m_viewMatrix = DirectX::XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
 
+
 }
 
 void CameraClass::GetViewMatrix(DirectX::XMMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
 }
+
+void CameraClass::GetWorldMatrix(DirectX::XMMATRIX& worldMatrix)
+{
+	worldMatrix = m_worldMatrix;
+}
+
+
+
+//static float pitch = 0;
+//static float yaw = 0;
+//pitch += yoffset;
+//yaw += xoffset;
+
+//if (pitch > 89.0f)
+//	pitch = 89.0f;
+//if (pitch < -89.0f)
+//	pitch = -89.0f;
+
+//const DirectX::XMFLOAT3* cameraPosition = new DirectX::XMFLOAT3(m_positionX, m_positionY, m_positionZ);
+//const DirectX::XMFLOAT3* cameraTarget = new DirectX::XMFLOAT3(yaw *0.0174532925f * cosf(pitch * 0.0174532925f), pitch * 0.0174532925f, yaw * 0.0174532925f * cosf(pitch * 0.0174532925f));
+//const DirectX::XMFLOAT3* cameraUpVector = new DirectX::XMFLOAT3(0, 1, 0);
+
+//DirectX::XMMATRIX matRotatey = DirectX::XMMatrixRotationY(0 * 0.0174532925f);
+//DirectX::XMMATRIX matRotatex = DirectX::XMMatrixRotationY(0* 0.0174532925f);
+//DirectX::XMMATRIX matRotatez = DirectX::XMMatrixRotationY(0 * 0.0174532925f);
+
+//m_worldMatrix = matRotatex*matRotatey*matRotatez;
+
+//m_viewMatrix = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(cameraPosition), DirectX::XMLoadFloat3(cameraTarget), DirectX::XMLoadFloat3(cameraUpVector));
+
+//delete cameraPosition;
+//delete cameraTarget;
+//delete cameraUpVector;

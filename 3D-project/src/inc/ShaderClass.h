@@ -10,8 +10,8 @@ public:
 	bool Initialize(ID3D11Device* device, HWND handle);
 	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 	void ShutDown();
-private:
 	~ShaderClass();
+private:
 	struct MatrixBufferType
 	{
 		DirectX::XMMATRIX world;

@@ -13,14 +13,18 @@ public:
 	void GetPosition(float arr[3]);
 	void GetRotation(float& arr);
 
-	void Render();
+	void Render(POINT mousePos);
 	void GetViewMatrix(DirectX::XMMATRIX& view);
+	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix);
 
-private:
 	~CameraClass();
+private:
+
+	POINT lastMousePos;
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
 	DirectX::XMMATRIX m_viewMatrix;
+	DirectX::XMMATRIX m_worldMatrix;
 
 };
 

@@ -13,16 +13,17 @@ public:
 	bool Render();
 	bool Update();
 	void DeltaTime();
+	void shutDown();
+	~System();
 private:
 	void checkKeyStrokes();
 	bool wasd[4];
-	~System();
 	float dt;
 	HWND wndHandle;
 	HINSTANCE m_hinstance;
 	Graphics* m_Graphics = 0;
 	InputClass* m_InputHandler = 0;
-
+	DWORD oldTime = 0;
 };
 
 #endif

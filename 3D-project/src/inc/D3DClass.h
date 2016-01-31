@@ -18,12 +18,14 @@ public:
 	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMAtrix);
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
+	void ShutDown();
 
+	~D3DClass();
 private:
 	bool m_vsync_enabled;
 	int m_videoCardMemory;
 	char m_videoCardDesc[128];
-	~D3DClass();
+
 	HWND m_handle;
 	IDXGISwapChain* m_swapChain = 0;
 	ID3D11Device* m_Device = 0;

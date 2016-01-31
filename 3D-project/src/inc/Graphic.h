@@ -16,7 +16,7 @@ class Graphics
 {
 public:
 	Graphics(HWND wndHandle);
-	bool Render(float dt, bool wasd[4], LPPOINT mousePos);
+	bool Render(float dt, bool wasd[4], POINT mousePos);
 	bool Update(float dt);
 	void Shutdown();
 

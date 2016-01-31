@@ -36,7 +36,7 @@ bool Graphics::Update(float dt)
 	return true;
 }
 
-bool Graphics::Render(float dt, bool wasd[4], LPPOINT mousePos)
+bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 {
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	float posArr[3];
@@ -45,21 +45,21 @@ bool Graphics::Render(float dt, bool wasd[4], LPPOINT mousePos)
 
 	if (wasd[0])
 	{
-		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] - 0.001);
+		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] + 2*dt);
 	}
 	if (wasd[1])
 	{
-		m_Camera->SetPosition(posArr[0] + 0.001, posArr[1], posArr[2]);
+		m_Camera->SetPosition(posArr[0] + 2*dt, posArr[1], posArr[2]);
 	}
 
 	if (wasd[2])
 	{
-		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] + 0.001);
+		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] - 2*dt);
 	}
 
 	if (wasd[3])
 	{
-		m_Camera->SetPosition(posArr[0] - 0.001, posArr[1], posArr[2]);
+		m_Camera->SetPosition(posArr[0] - 2*dt, posArr[1], posArr[2]);
 	}
 
 	m_DirectX->GetWorldMatrix(worldMatrix);
@@ -67,7 +67,7 @@ bool Graphics::Render(float dt, bool wasd[4], LPPOINT mousePos)
 	m_DirectX->GetProjectionMatrix(projectionMatrix);
 
 	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
-	m_Camera->Render();
+	m_Camera->Render(mousePos);
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	m_DirectX->PresentScene();
@@ -103,10 +103,10 @@ void Graphics::Shutdown()
 	//// Release the D3D object.
 	//if (m_DirectX)
 	//{
-	//	m_DirectX->
+	//	m_DirectX->ShutDown();
 	//	delete m_DirectX;
-	//	m_Direct3D = 0;
+	//	m_DirectX = 0;
 	//}
 
-	//return;
+	return;
 }

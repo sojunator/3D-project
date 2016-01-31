@@ -35,6 +35,7 @@
     <ClInclude Include="src\inc\Graphic.h" />
     <ClInclude Include="src\inc\InputClass.h" />
     <ClInclude Include="src\inc\Model.h" />
+    <ClInclude Include="src\inc\ObjLoader.h" />
     <ClInclude Include="src\inc\ShaderClass.h" />
     <ClInclude Include="src\inc\System.h" />
   </ItemGroup>
