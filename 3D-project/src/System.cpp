@@ -12,7 +12,6 @@ System::System(HWND handle, InputClass* inputHandle)
 
 bool System::Render()
 {
-
 	m_Graphics->Render(dt, wasd, m_InputHandler->DeltaPosMouse(wndHandle));
 	return true;
 }

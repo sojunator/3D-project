@@ -9,7 +9,7 @@ public:
 	InputClass();
 	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 	bool IsKeyPressed(unsigned int key);
-	void KeyUp(unsigned int key);
+	void keyUp(unsigned int key);
 	void keyDown(unsigned int key);
 	LPPOINT DeltaPosMouse(HWND handle);
 	void SetHandle(HWND handle)

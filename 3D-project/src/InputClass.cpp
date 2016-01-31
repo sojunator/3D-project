@@ -31,44 +31,28 @@ LRESULT CALLBACK InputClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam,
 	switch (umsg)
 	{
 		case WM_KEYDOWN:
-			switch (wparam)
-			{
-				case VK_ESCAPE:
-					PostQuitMessage(0);
-					return 0;
-				case 0x57: // W key
-					keyDown(0x57);
-					return 0;
-				case 0x53: // S key
-					keyDown(0x53);
-					return 0;
-				case 0x41: // A key
-					keyDown(0x41);
-					return 0;
-				case 0x44:
-					keyDown(0x44);
-					return 0;
-			}
+			if (wparam == 0x57)
+				keyDown(0x57);
+			if (wparam == 0x53)
+				keyDown(0x53);
+			if (wparam == 0x41)
+				keyDown(0x41);
+			if (wparam == 0x44)
+				keyDown(0x44);
+			if (wparam == VK_ESCAPE)
+				PostQuitMessage(0);
 			break;
 		case WM_KEYUP:
-			switch (wparam)
-			{
-			case VK_ESCAPE:
+			if (wparam == 0x57)
+				keyUp(0x57);
+			if (wparam == 0x53)
+				keyUp(0x53);
+			if (wparam == 0x41)
+				keyUp(0x41);
+			if (wparam == 0x44)
+				keyUp(0x44);
+			if (wparam == VK_ESCAPE)
 				PostQuitMessage(0);
-				return 0;
-			case 0x57: // W key
-				KeyUp(0x57);
-				return 0;
-			case 0x53: // S key
-				KeyUp(0x53);
-				return 0;
-			case 0x41: // A key
-				KeyUp(0x41);
-				return 0;
-			case 0x44:
-				KeyUp(0x44);
-				return 0;
-			}
 
 		default:
 		{
@@ -87,7 +71,7 @@ void InputClass::keyDown(unsigned int key)
 	m_keys[key] = true;
 }
 
-void InputClass::KeyUp(unsigned int key)
+void InputClass::keyUp(unsigned int key)
 {
 	m_keys[key] = false;
 }
