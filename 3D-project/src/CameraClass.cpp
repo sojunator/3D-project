@@ -93,6 +93,28 @@ void CameraClass::Render(POINT mouseOffset)
 
 }
 
+void CameraClass::HandleKeyInput(bool wasd[4], float dt)
+{
+	if (wasd[0])
+	{
+		this->SetPosition(m_positionX, m_positionY, m_positionZ + 2 * dt);
+	}
+	if (wasd[1])
+	{
+		this->SetPosition(m_positionX + 2 * dt, m_positionY, m_positionZ);
+	}
+
+	if (wasd[2])
+	{
+		this->SetPosition(m_positionX, m_positionY, m_positionZ - 2 * dt);
+	}
+
+	if (wasd[3])
+	{
+		this->SetPosition(m_positionX - 2 * dt, m_positionY, m_positionZ);
+	}
+}
+
 void CameraClass::GetViewMatrix(DirectX::XMMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
@@ -107,29 +129,3 @@ CameraClass::~CameraClass()
 {
 
 }
-
-//static float pitch = 0;
-//static float yaw = 0;
-//pitch += yoffset;
-//yaw += xoffset;
-
-//if (pitch > 89.0f)
-//	pitch = 89.0f;
-//if (pitch < -89.0f)
-//	pitch = -89.0f;
-
-//const DirectX::XMFLOAT3* cameraPosition = new DirectX::XMFLOAT3(m_positionX, m_positionY, m_positionZ);
-//const DirectX::XMFLOAT3* cameraTarget = new DirectX::XMFLOAT3(yaw *0.0174532925f * cosf(pitch * 0.0174532925f), pitch * 0.0174532925f, yaw * 0.0174532925f * cosf(pitch * 0.0174532925f));
-//const DirectX::XMFLOAT3* cameraUpVector = new DirectX::XMFLOAT3(0, 1, 0);
-
-//DirectX::XMMATRIX matRotatey = DirectX::XMMatrixRotationY(0 * 0.0174532925f);
-//DirectX::XMMATRIX matRotatex = DirectX::XMMatrixRotationY(0* 0.0174532925f);
-//DirectX::XMMATRIX matRotatez = DirectX::XMMatrixRotationY(0 * 0.0174532925f);
-
-//m_worldMatrix = matRotatex*matRotatey*matRotatez;
-
-//m_viewMatrix = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(cameraPosition), DirectX::XMLoadFloat3(cameraTarget), DirectX::XMLoadFloat3(cameraUpVector));
-
-//delete cameraPosition;
-//delete cameraTarget;
-//delete cameraUpVector;

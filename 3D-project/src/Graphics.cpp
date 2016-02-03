@@ -39,29 +39,8 @@ bool Graphics::Update(float dt)
 bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 {
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	float posArr[3];
 
-	m_Camera->GetPosition(posArr);
-
-	if (wasd[0])
-	{
-		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] + 2*dt);
-	}
-	if (wasd[1])
-	{
-		m_Camera->SetPosition(posArr[0] + 2*dt, posArr[1], posArr[2]);
-	}
-
-	if (wasd[2])
-	{
-		m_Camera->SetPosition(posArr[0], posArr[1], posArr[2] - 2*dt);
-	}
-
-	if (wasd[3])
-	{
-		m_Camera->SetPosition(posArr[0] - 2*dt, posArr[1], posArr[2]);
-	}
-
+	m_Camera->HandleKeyInput(wasd, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_DirectX->GetProjectionMatrix(projectionMatrix);

@@ -12,6 +12,7 @@ public:
 
 	void GetPosition(float arr[3]);
 	void GetRotation(float& arr);
+	void HandleKeyInput(bool wasd[4], float dt);
 
 	void Render(POINT mousePos);
 	void GetViewMatrix(DirectX::XMMATRIX& view);
