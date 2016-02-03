@@ -85,13 +85,13 @@ void Graphics::Shutdown()
 		m_Shader = 0;
 	}
 
-	//// Release the model object.
-	//if (m_Model)
-	//{
-	//	m_Model->Shutdown();
-	//	delete m_Model;
-	//	m_Model = 0;
-	//}
+	// Release the model object.
+	if (m_Model)
+	{
+		m_Model->Shutdown();
+		delete m_Model;
+		m_Model = 0;
+	}
 
 	//// Release the camera object.
 	//if (m_Camera)
