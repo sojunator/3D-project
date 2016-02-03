@@ -103,6 +103,11 @@ void Model::Shutdown()
 	ShutdownBuffers();
 }
 
+Model::~Model()
+{
+
+}
+
 void Model::ShutdownBuffers()
 {
 	m_indexBuffer->Release();

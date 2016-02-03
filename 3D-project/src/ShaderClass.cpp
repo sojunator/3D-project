@@ -197,6 +197,11 @@ void ShaderClass::ShutDown()
 	ShutdownShader();
 }
 
+ShaderClass::~ShaderClass()
+{
+
+}
+
 bool ShaderClass::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
 {
 	bool result;

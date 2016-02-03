@@ -19,7 +19,7 @@ public:
 	~InputClass();
 private:
 	HWND m_handle;
-	LPPOINT oldMousePos = 0;
+	POINT oldMousePos;
 	bool  m_keys[256];
 
 };

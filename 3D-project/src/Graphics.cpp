@@ -77,13 +77,13 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 void Graphics::Shutdown()
 {
-	//// Release the color shader object.
-	//if (m_Shader)
-	//{
-	//	m_Shader->ShutDown();
-	//	delete m_Shader;
-	//	m_Shader = 0;
-	//}
+	// Release the color shader object.
+	if (m_Shader)
+	{
+		m_Shader->ShutDown();
+		delete m_Shader;
+		m_Shader = 0;
+	}
 
 	//// Release the model object.
 	//if (m_Model)
@@ -109,4 +109,9 @@ void Graphics::Shutdown()
 	//}
 
 	return;
+}
+
+Graphics::~Graphics()
+{
+
 }

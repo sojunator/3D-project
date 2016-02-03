@@ -7,14 +7,24 @@ InputClass::InputClass()
 	// All keys needs to be set too false
 	for (int i = 0; i < 256; i++)
 		m_keys[i] = false;
+
+	oldMousePos.x = 400;
+	oldMousePos.y = 300;
 }
 
 POINT InputClass::mousePos(HWND handle)
 {
-	POINT currentPos;
+	POINT currentPos, offset;
 	GetCursorPos(&currentPos);
 	ScreenToClient(handle, &currentPos);
-	return currentPos;
+
+	offset.x = oldMousePos.x - currentPos.x;
+	offset.y = oldMousePos.y - currentPos.y;
+
+	ClientToScreen(handle, &oldMousePos);
+	SetCursorPos(oldMousePos.x, oldMousePos.y);
+
+	return offset;
 }
 
 LRESULT CALLBACK InputClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)

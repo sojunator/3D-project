@@ -37,12 +37,11 @@ void CameraClass::GetPosition(float arr[3])
 }
 
 
-void CameraClass::Render(POINT mousePos)
+void CameraClass::Render(POINT mouseOffset)
 {
 	DirectX::XMFLOAT3 up, position, lookAt;
 	DirectX::XMVECTOR upVector, positionVector, lookAtVector;
 	DirectX::XMMATRIX rotationMatrix;
-	float yaw = 0, pitch = 0, roll = 0;
 	float sensitivity = 0.0004;
 	// upwards vector
 	up.x = 0.0f;
@@ -66,9 +65,8 @@ void CameraClass::Render(POINT mousePos)
 
 	lookAtVector = DirectX::XMLoadFloat3(&lookAt);
 
-	float xoffset = (lastMousePos.x - mousePos.x) * sensitivity;
-	float yoffset = (lastMousePos.y - mousePos.y) * sensitivity;
-	/*lastMousePos = mousePos;*/
+	float xoffset = mouseOffset.x * sensitivity;
+	float yoffset = mouseOffset.y * sensitivity;
 
 	pitch += yoffset;
 	yaw += xoffset;

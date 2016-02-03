@@ -44,5 +44,10 @@ void System::DeltaTime()
 
 void System::shutDown()
 {
-	//m_Graphics->Shutdown();
+	m_Graphics->Shutdown();
+}
+
+System::~System()
+{
+
 }

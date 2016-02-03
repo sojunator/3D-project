@@ -292,6 +292,11 @@ void D3DClass::Clean3D()
 
 }
 
+D3DClass::~D3DClass()
+{
+
+}
+
 void D3DClass::InitScene(float r, float g, float b, float a)
 {
 	float color[4];

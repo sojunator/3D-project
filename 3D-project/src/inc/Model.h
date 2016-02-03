@@ -10,7 +10,7 @@ public:
 	void Render(ID3D11DeviceContext* devcon);
 	int GetIndexCount();
 	void Shutdown();
-
+	~Model();
 private:
     int	m_indexCount;
 	int m_vertexCount;

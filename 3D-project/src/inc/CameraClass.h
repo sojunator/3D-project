@@ -23,6 +23,7 @@ private:
 	POINT lastMousePos;
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
+	float yaw = 0, pitch = 0, roll = 0;
 	DirectX::XMMATRIX m_viewMatrix;
 	DirectX::XMMATRIX m_worldMatrix;
 
