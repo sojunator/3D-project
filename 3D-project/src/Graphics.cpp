@@ -93,20 +93,21 @@ void Graphics::Shutdown()
 		m_Model = 0;
 	}
 
-	//// Release the camera object.
-	//if (m_Camera)
-	//{
-	//	delete m_Camera;
-	//	m_Camera = 0;
-	//}
+	// Release the camera object.
+	if (m_Camera)
+	{
 
-	//// Release the D3D object.
-	//if (m_DirectX)
-	//{
-	//	m_DirectX->ShutDown();
-	//	delete m_DirectX;
-	//	m_DirectX = 0;
-	//}
+		delete m_Camera;
+		m_Camera = 0;
+	}
+
+	// Release the D3D object.
+	if (m_DirectX)
+	{
+		m_DirectX->ShutDown();
+		delete m_DirectX;
+		m_DirectX = 0;
+	}
 
 	return;
 }

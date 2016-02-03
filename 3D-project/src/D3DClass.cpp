@@ -316,6 +316,65 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 
 }
 
+void D3DClass::ShutDown()
+{
+	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
+	if (m_swapChain)
+	{
+		m_swapChain->SetFullscreenState(false, NULL);
+	}
+
+	if (m_rasterState)
+	{
+		m_rasterState->Release();
+		m_rasterState = 0;
+	}
+
+	if (m_depthStencilView)
+	{
+		m_depthStencilView->Release();
+		m_depthStencilView = 0;
+	}
+
+	if (m_depthStencilState)
+	{
+		m_depthStencilState->Release();
+		m_depthStencilState = 0;
+	}
+
+	if (m_depthStencilBuffer)
+	{
+		m_depthStencilBuffer->Release();
+		m_depthStencilBuffer = 0;
+	}
+
+	if (m_renderTargetView)
+	{
+		m_renderTargetView->Release();
+		m_renderTargetView = 0;
+	}
+
+	if (m_Devcon)
+	{
+		m_Devcon->Release();
+		m_Devcon = 0;
+	}
+
+	if (m_Device)
+	{
+		m_Device->Release();
+		m_Device = 0;
+	}
+
+	if (m_swapChain)
+	{
+		m_swapChain->Release();
+		m_swapChain = 0;
+	}
+
+	return;
+}
+
 void D3DClass::PresentScene()
 {
 	m_swapChain->Present(0, 0);

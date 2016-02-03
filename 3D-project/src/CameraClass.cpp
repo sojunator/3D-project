@@ -103,7 +103,10 @@ void CameraClass::GetWorldMatrix(DirectX::XMMATRIX& worldMatrix)
 	worldMatrix = m_worldMatrix;
 }
 
+CameraClass::~CameraClass()
+{
 
+}
 
 //static float pitch = 0;
 //static float yaw = 0;
