@@ -9,6 +9,6 @@
 
 #define W_HEIGHT 800
 #define W_WITDH 600
-#define OBJ_FOLDER_PATH std::string("../3D-project/src/hlsl/")
+#define OBJ_FOLDER_PATH std::string("../3D-project/src/obj/")
 
 #endif

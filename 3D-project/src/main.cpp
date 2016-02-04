@@ -5,6 +5,7 @@
 #include "inc\defines.h"
 #include "inc\System.h"
 #include "inc\InputClass.h"
+#include "inc\ObjLoader.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -24,6 +25,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	// Create our system class
 	System* controller = new System(wndHandle, &inputHandler);
 
+	loadObj("pyramid.obj", "pyramid.mtl");
 
 	if (wndHandle)
 	{
