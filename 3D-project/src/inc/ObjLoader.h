@@ -20,7 +20,7 @@ struct VertexNormal
 
 struct Face
 {
-	float x, y, z;
+	int x, y, z;
 };
 
 struct Material
@@ -28,7 +28,28 @@ struct Material
 	float x, y, z;
 };
 
-void loadObj(std::string objfilename, std::string mtrfilename) 
+class ObjData
+{
+public:
+	std::vector<VertexPos> vertices;
+	std::vector<VertexUv> uvCords;
+	std::vector<VertexNormal> normals;
+	std::vector<Face> faces;
+	std::vector<Material> materials;
+	std::string texture;
+	ObjData();
+	ObjData(std::vector<VertexPos> vertices, std::vector<VertexUv> uvCords, std::vector<VertexNormal> normals, std::vector<Face> faces, std::vector<Material> materials, std::string texture)
+	{
+		this->vertices = vertices;
+		this->uvCords = uvCords;
+		this->normals = normals;
+		this->faces = faces;
+		this->materials = materials;
+		this->texture = texture;
+	}
+};
+
+ObjData loadObj(std::string objfilename, std::string mtrfilename) 
 {
 	std::istringstream inputString;
 	std::ifstream obj_file(OBJ_FOLDER_PATH + objfilename);
@@ -73,9 +94,10 @@ void loadObj(std::string objfilename, std::string mtrfilename)
 
 		if (tempLine.substr(0, 2) == "f ")
 		{
+			inputString >> special;
 			for (int i = 0; i < 3; i++)
 			{
-				inputString >> special >>
+				inputString >>
 					ctf.x >> slash >> ctf.y >> slash >> ctf.z;
 				faces.push_back(ctf);
 			}
@@ -122,4 +144,6 @@ void loadObj(std::string objfilename, std::string mtrfilename)
 		inputString.clear();
 	}
 	mtr_file.close();
+	ObjData returnData(vertices, uvCords, normals, faces, materials, texture);
+	return returnData;
 }

@@ -94,7 +94,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
 	}
 
-	// Why dont need the buffers anymore
+	// We dont need the buffers anymore
 	vertexShaderBuffer->Release();
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer->Release();
