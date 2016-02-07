@@ -49,13 +49,13 @@ public:
 	}
 };
 
-ObjData loadObj(std::string objfilename, std::string mtrfilename) 
+ObjData loadObj(std::string objfilename)
 {
 	std::istringstream inputString;
 	std::ifstream obj_file(OBJ_FOLDER_PATH + objfilename);
-	std::ifstream mtr_file(OBJ_FOLDER_PATH + mtrfilename);
 
-	std::string tempLine, special;
+
+	std::string tempLine, special, mtlfilename;
 	std::vector<VertexPos> vertices;
 	std::vector<VertexUv> uvCords;
 	std::vector<VertexNormal> normals;
@@ -71,6 +71,11 @@ ObjData loadObj(std::string objfilename, std::string mtrfilename)
 	while (std::getline(obj_file, tempLine))
 	{
 		inputString.str(tempLine);
+
+		if (tempLine.substr(0, 3) == "mtl")
+		{
+			inputString >> special >> mtlfilename;
+		}
 		if (tempLine.substr(0, 2) == "v ")
 		{
 			inputString >> special >>
@@ -107,6 +112,7 @@ ObjData loadObj(std::string objfilename, std::string mtrfilename)
 	}
 	obj_file.close();
 
+	std::ifstream mtr_file(OBJ_FOLDER_PATH + mtlfilename);
 	std::vector<Material> materials;
 	Material Kd, Ka, Ks;
 	std::string texture;

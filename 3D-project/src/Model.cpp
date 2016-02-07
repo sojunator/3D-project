@@ -17,7 +17,7 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 {
 	HRESULT hr;
 
-	ObjData readData = loadObj("pyramid.obj", "pyramid.mtl");
+	ObjData readData = loadObj("pyramid.obj");
 
 	m_vertexCount = readData.faces.size();
 	m_indexCount = readData.faces.size();
@@ -173,6 +173,9 @@ void Model::ShutdownBuffers()
 
 	m_pTexture->Release();
 	m_pTexture = 0;
+
+	m_constantBuffer->Release();
+	m_constantBuffer = 0;
 }
 
 void Model::Render(ID3D11DeviceContext* devcon)
