@@ -1,6 +1,7 @@
 #include "inc\defines.h"
 #include "inc\Model.h"
 #include "inc\ObjLoader.h"
+#include "WICTextureLoader.h"
 
 
 Model::Model(ID3D11Device* device)
@@ -13,7 +14,7 @@ Model::Model(ID3D11Device* device)
 
 bool Model::InitializeBuffers(ID3D11Device* device)
 {
-
+	HRESULT hr;
 
 	ObjData readData = loadObj("pyramid.obj", "pyramid.mtl");
 
@@ -32,23 +33,27 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 		v.position.y = readData.vertices[f.x - 1].y;
 		v.position.z = readData.vertices[f.x - 1].z;
 
-		v.color = DirectX::XMFLOAT4(1.f, 0.f, 1.f, 1.f);
+		v.uvCords.x = 1 - readData.uvCords[f.y - 1].u; // And we flip some shit
+		v.uvCords.y = 1 - readData.uvCords[f.y - 1].v; // 
+
+		v.normal.x = readData.normals[f.z - 1].x;
+		v.normal.y = readData.normals[f.z - 1].y;
+		v.normal.z = readData.normals[f.z - 1].z;
+
 
 		vertices[i] = v;
 		i++;
 	}
 
+	// Load texture
+	LPCTSTR filename = L"../3D-project/src/obj/default_tex.png";
+	ID3D11Resource* texture;
+	hr = DirectX::CreateWICTextureFromFile(device, NULL, filename, NULL, &m_pTexture, 0);
 
-	// Left bottom
-	//vertices[0].position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	//vertices[0].color = DirectX::XMFLOAT4(1.0f, 0.2f, 0.6f, 1.0f);
-
-	//// Top
-	//vertices[1].position = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-	//vertices[1].color = DirectX::XMFLOAT4(0.3f, 1.0f, 0.6f, 1.0f);
-
-	//vertices[2].position = DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f);
-	//vertices[2].color = DirectX::XMFLOAT4(0.3f, 0.2f, 1.0f, 1.0f);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to load texture", L"Error", MB_OK);
+	}
 
 	// Configure index
 	for (int i = 0; i < m_indexCount; i++)
@@ -70,7 +75,6 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	HRESULT hr;
 	hr = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(hr))
 	{
@@ -107,6 +111,7 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 
 void Model::RenderBuffers(ID3D11DeviceContext* devcon)
 {
+
 	unsigned int stride;
 	unsigned int offset;
 
@@ -114,6 +119,8 @@ void Model::RenderBuffers(ID3D11DeviceContext* devcon)
 	offset = 0;
 
 	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+
+	devcon->PSSetShaderResources(0, 1, &m_pTexture);
 
 	devcon->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 

@@ -14,12 +14,14 @@ public:
 private:
     int	m_indexCount;
 	int m_vertexCount;
+	ID3D11ShaderResourceView* m_pTexture;
 	ID3D11Buffer* m_vertexBuffer, *m_indexBuffer;
 
 	struct Vertex
 	{
 		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT4 color;
+		DirectX::XMFLOAT4 normal;
+		DirectX::XMFLOAT2 uvCords;
 	};
 
 	bool InitializeBuffers(ID3D11Device* device);

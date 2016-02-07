@@ -139,6 +139,7 @@ ObjData loadObj(std::string objfilename, std::string mtrfilename)
 		{
 			inputString >> special >>
 				texture;
+			texture = OBJ_FOLDER_PATH + texture;
 		}
 
 		inputString.clear();

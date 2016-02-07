@@ -18,6 +18,7 @@ InputClass inputHandler;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
+	CoInitialize(NULL);
 	MSG msg = { 0 };
 
 	HWND wndHandle = InitWindow(hInstance);
@@ -46,6 +47,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	}
 	controller->shutDown();
 	delete controller;
+	CoUninitialize();
 	return (int)msg.wParam;
 }
 
