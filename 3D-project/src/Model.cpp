@@ -144,6 +144,9 @@ void Model::ShutdownBuffers()
 
 	m_vertexBuffer->Release();
 	m_vertexBuffer = 0;
+
+	m_pTexture->Release();
+	m_pTexture = 0;
 }
 
 void Model::Render(ID3D11DeviceContext* devcon)

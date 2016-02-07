@@ -97,7 +97,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 {
 	if (wasd[0])
 	{
-		this->SetPosition(m_positionX, m_positionY, m_positionZ + 2 * dt);
+		this->SetPosition(m_positionX + 2*sinf(yaw)*dt, m_positionY, m_positionZ + 2*cosf(yaw) * dt);
 	}
 	if (wasd[1])
 	{
@@ -106,7 +106,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 
 	if (wasd[2])
 	{
-		this->SetPosition(m_positionX, m_positionY, m_positionZ - 2 * dt);
+		this->SetPosition(m_positionX - sinf(yaw)*dt, m_positionY, m_positionZ - cosf(yaw) * dt);
 	}
 
 	if (wasd[3])
