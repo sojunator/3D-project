@@ -8,6 +8,7 @@ Model::Model(ID3D11Device* device)
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
+	m_constantBuffer = 0;
 
 	InitializeBuffers(device);
 }
@@ -44,6 +45,29 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 		vertices[i] = v;
 		i++;
 	}
+
+	// Create cb with material properties
+	MaterialInfo materials;
+	materials.Kd = DirectX::XMFLOAT4(readData.materials[0].x, readData.materials[0].y, readData.materials[0].z, 0.0f); // need to make sure bytewith remains multiple of 16 
+	materials.Ka = DirectX::XMFLOAT4(readData.materials[1].x, readData.materials[1].y, readData.materials[1].z, 0.0f);
+	materials.Ks = DirectX::XMFLOAT4(readData.materials[2].x, readData.materials[2].y, readData.materials[2].z, 0.0f);
+
+	D3D11_BUFFER_DESC material_cb;
+	material_cb.ByteWidth = sizeof(MaterialInfo);
+	material_cb.Usage = D3D11_USAGE_DYNAMIC;
+	material_cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	material_cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	material_cb.StructureByteStride = 0;
+	material_cb.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = &materials;
+	initData.SysMemPitch = 0;
+	initData.SysMemSlicePitch = 0;
+
+	hr = device->CreateBuffer(&material_cb, &initData, &m_constantBuffer);
+	if (FAILED(hr))
+		MessageBox(NULL, L"Failed to create constantbuffer for model", L"Failure", MB_OK);
 
 	// Load texture
 	LPCTSTR filename = L"../3D-project/src/obj/default_tex.png";
@@ -121,6 +145,8 @@ void Model::RenderBuffers(ID3D11DeviceContext* devcon)
 	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	devcon->PSSetShaderResources(0, 1, &m_pTexture);
+
+	devcon->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 
 	devcon->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 

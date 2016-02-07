@@ -1,3 +1,10 @@
+cbuffer MaterialInfo
+{
+	float4 Ka;
+	float4 Ks;
+	float4 Kd;
+};
+
 struct PixelInput
 {
 	float4 position : SV_POSITION;

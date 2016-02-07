@@ -18,8 +18,8 @@ POINT InputClass::mousePos(HWND handle)
 	GetCursorPos(&currentPos);
 	ScreenToClient(handle, &currentPos);
 
-	offset.x = oldMousePos.x - currentPos.x;
-	offset.y = oldMousePos.y - currentPos.y;
+	offset.x = -(oldMousePos.x - currentPos.x);
+	offset.y = -(oldMousePos.y - currentPos.y);
 
 	ClientToScreen(handle, &oldMousePos);
 	SetCursorPos(oldMousePos.x, oldMousePos.y);
