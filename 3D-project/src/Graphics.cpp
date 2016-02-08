@@ -19,7 +19,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	// Create the model object.
-	m_Model = new Model(m_DirectX->GetDevice());
+	m_Model = new Model(m_DirectX->GetDevice(), m_Camera);
 
 
 	// Create the color shader object.

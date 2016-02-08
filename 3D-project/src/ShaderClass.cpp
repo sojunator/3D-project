@@ -1,5 +1,6 @@
 #include "inc\ShaderClass.h"
 #include "inc\defines.h"
+#include "inc\CameraClass.h"
 #include <string>
 
 ShaderClass::ShaderClass()
@@ -187,7 +188,7 @@ void ShaderClass::ShutdownShader()
 
 void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMsg, HWND hwnd, WCHAR* shaderFilename)
 {
-	////OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+	//OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
 	MessageBox(hwnd, L"Error compiling shader. Check output debug.", shaderFilename, MB_OK);
 	//errorMsg->Release();
 }
