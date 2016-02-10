@@ -7,10 +7,10 @@ class CameraClass
 {
 public:
 	CameraClass();
-	void SetPosition(float x, float y, float z);
+	void SetPosition(DirectX::XMFLOAT3 newPosition);
 	void SetRotation(float x, float y, float z);
 
-	void GetPosition(float arr[3]);
+	DirectX::XMFLOAT3 GetPosition();
 	void GetRotation(float& arr);
 	void HandleKeyInput(bool wasd[4], float dt);
 
@@ -22,7 +22,7 @@ public:
 private:
 
 	POINT lastMousePos;
-	float m_positionX, m_positionY, m_positionZ;
+	DirectX::XMFLOAT3 m_position;
 	float m_rotationX, m_rotationY, m_rotationZ;
 	float yaw = 0, pitch = 0, roll = 0;
 	DirectX::XMMATRIX m_viewMatrix;

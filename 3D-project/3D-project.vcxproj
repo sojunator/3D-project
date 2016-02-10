@@ -24,11 +24,11 @@
     <ClCompile Include="src\D3DClass.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\InputClass.cpp" />
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\ShaderClass.cpp" />
     <ClCompile Include="src\System.cpp" />
-    <ClCompile Include="src\WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inc\CameraClass.h" />
@@ -36,11 +36,11 @@
     <ClInclude Include="src\inc\defines.h" />
     <ClInclude Include="src\inc\Graphic.h" />
     <ClInclude Include="src\inc\InputClass.h" />
+    <ClInclude Include="src\inc\Light.h" />
     <ClInclude Include="src\inc\Model.h" />
     <ClInclude Include="src\inc\ObjLoader.h" />
     <ClInclude Include="src\inc\ShaderClass.h" />
     <ClInclude Include="src\inc\System.h" />
-    <ClInclude Include="src\inc\WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\hlsl\PixelShader.hlsl">

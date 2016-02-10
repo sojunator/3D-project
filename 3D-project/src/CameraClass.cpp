@@ -3,9 +3,7 @@
 
 CameraClass::CameraClass()
 {
-	m_positionX = 0.0f;
-	m_positionY = 0.0f;
-	m_positionZ = 0.0f;
+	m_position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_rotationX = 0.0f;
 	m_rotationY = 0.0f;
@@ -15,11 +13,9 @@ CameraClass::CameraClass()
 	lastMousePos.y = 300;
 }
 
-void CameraClass::SetPosition(float x, float y, float z)
+void CameraClass::SetPosition(DirectX::XMFLOAT3 newPosition)
 {
-	m_positionX = x;
-	m_positionY = y;
-	m_positionZ = z;
+	m_position = newPosition;
 }
 
 void CameraClass::SetRotation(float x, float y, float z)
@@ -29,11 +25,9 @@ void CameraClass::SetRotation(float x, float y, float z)
 	m_rotationZ = z;
 }
 
-void CameraClass::GetPosition(float arr[3])
+DirectX::XMFLOAT3 CameraClass::GetPosition()
 {
-	arr[0] = m_positionX;
-	arr[1] = m_positionY;
-	arr[2] = m_positionZ;
+	return m_position;
 }
 
 
@@ -51,9 +45,7 @@ void CameraClass::Render(POINT mouseOffset)
 	upVector = DirectX::XMLoadFloat3(&up);
 	
 	// Pos in world
-	position.x = m_positionX;
-	position.y = m_positionY;
-	position.z = m_positionZ;
+	position = m_position;
 
 	// Load it into xmvector structure
 	positionVector = DirectX::XMLoadFloat3(&position);
@@ -97,21 +89,21 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 {
 	if (wasd[0])
 	{
-		this->SetPosition(m_positionX + 2 * sinf(yaw)*dt, m_positionY, m_positionZ + 2 * cosf(yaw) * dt);
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x + 2 * sinf(yaw)*dt, m_position.y, m_position.z + 2 * cosf(yaw) * dt));
 	}
 	if (wasd[1])
 	{
-		this->SetPosition(m_positionX - 2 * dt*sinf(yaw+DirectX::XM_PI/2.0f), m_positionY, m_positionZ - 2 * dt*cosf(yaw + DirectX::XM_PI / 2.0f));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - 2 * dt*sinf(yaw+DirectX::XM_PI/2.0f), m_position.y, m_position.z - 2 * dt*cosf(yaw + DirectX::XM_PI / 2.0f)));
 	}
 
 	if (wasd[2])
 	{
-		this->SetPosition(m_positionX - sinf(yaw)*dt, m_positionY, m_positionZ - cosf(yaw) * dt);
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - sinf(yaw)*dt, m_position.y, m_position.z - cosf(yaw) * dt));
 	}
 
 	if (wasd[3])
 	{
-		this->SetPosition(m_positionX -  2 * dt*sinf(yaw - DirectX::XM_PI / 2.0f), m_positionY, m_positionZ - 2 * dt*cosf(yaw - DirectX::XM_PI / 2.0f));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x -  2 * dt*sinf(yaw - DirectX::XM_PI / 2.0f), m_position.y, m_position.z - 2 * dt*cosf(yaw - DirectX::XM_PI / 2.0f)));
 	}
 }
 

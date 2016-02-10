@@ -1,4 +1,5 @@
 #include "inc\Graphic.h"
+#include "inc\Light.h"
 #include <math.h>
 
 Graphics::Graphics(HWND handle)
@@ -16,7 +17,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera = new CameraClass;
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
+	m_Camera->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f));
 
 	// Create the model object.
 	m_Model = new Model(m_DirectX->GetDevice());
@@ -25,6 +26,11 @@ Graphics::Graphics(HWND handle)
 	// Create the color shader object.
 	m_Shader = new ShaderClass;
 
+	// Create light array, this array handles all lights an its information
+	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(0.0f, 1.0f, 0.4f, 1.0f);
+	float ambientStrenght = 0.3f;
+	m_lights = Light(lightPos, lightColour, ambientStrenght, m_DirectX->GetDevice());
 
 	// Initialize the color shader object.
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle);
@@ -47,7 +53,7 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
 	m_Camera->Render(mousePos);
-	m_Model->Render(m_DirectX->GetDeviceContext());
+	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer(), m_Camera->GetPosition());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	m_DirectX->PresentScene();
 
@@ -56,6 +62,15 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 void Graphics::Shutdown()
 {
+	//if (m_lights) FOR lators
+	//{
+	//	for (int i = 0; i < nrOfLights; i++)
+	//	{
+	//		m_lights[i].Shutdown();
+	//	}
+	//	delete m_lights;
+	//}
+
 	// Release the color shader object.
 	if (m_Shader)
 	{

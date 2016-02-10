@@ -7,7 +7,7 @@ class Model
 {
 public:
 	Model(ID3D11Device* device);
-	void Render(ID3D11DeviceContext* devcon);
+	void Render(ID3D11DeviceContext* devcon, ID3D11Buffer* constantBuffer, DirectX::XMFLOAT3 CameraPosition);
 	int GetIndexCount();
 	void Shutdown();
 	~Model();

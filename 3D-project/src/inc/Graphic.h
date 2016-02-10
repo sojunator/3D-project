@@ -11,6 +11,7 @@
 #include "Model.h"
 #include "CameraClass.h"
 #include "ShaderClass.h"
+#include "Light.h"
 
 class Graphics
 {
@@ -21,6 +22,8 @@ public:
 	void Shutdown();
 
 private:
+	Light m_lights;
+	float m_nrOfLights;
 	D3DClass* m_DirectX;
 	~Graphics();
 	CameraClass* m_Camera;
