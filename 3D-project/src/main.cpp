@@ -63,7 +63,7 @@ HWND InitWindow(HINSTANCE hInstance)
 	if (!RegisterClassEx(&wcex))
 		return false;
 
-	RECT rc = { 0, 0, W_HEIGHT, W_WITDH };
+	RECT rc = { 0, 0, W_WITDH, W_HEIGHT };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 	HWND handle = CreateWindow(
