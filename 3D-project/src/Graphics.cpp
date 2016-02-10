@@ -27,10 +27,11 @@ Graphics::Graphics(HWND handle)
 	m_Shader = new ShaderClass;
 
 	// Create light array, this array handles all lights an its information
-	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(0.0f, 1.0f, 0.4f, 1.0f);
-	float ambientStrenght = 0.3f;
+	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f);
+	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
+	float ambientStrenght = 0.1f;
 	m_lights = Light(lightPos, lightColour, ambientStrenght, m_DirectX->GetDevice());
+	m_lights.CreateConstantBuffer();
 
 	// Initialize the color shader object.
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle);
@@ -70,6 +71,8 @@ void Graphics::Shutdown()
 	//	}
 	//	delete m_lights;
 	//}
+
+	m_lights.Shutdown();
 
 	// Release the color shader object.
 	if (m_Shader)

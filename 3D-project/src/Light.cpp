@@ -16,7 +16,7 @@ void Light::CreateConstantBuffer()
 	cbData.m_ambientStrenght = m_ambientStrenght;
 
 	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = sizeof(LightInformation);
+	cbDesc.ByteWidth = sizeof(cbData);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;

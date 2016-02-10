@@ -33,7 +33,7 @@ private:
 	};
 
 	bool InitializeBuffers(ID3D11Device* device);
-	void RenderBuffers(ID3D11DeviceContext* devcon);
+	void RenderBuffers(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight, DirectX::XMFLOAT3 CameraPosition);
 	void ShutdownBuffers();
 
 };

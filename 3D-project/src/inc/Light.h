@@ -18,8 +18,8 @@ private:
 	struct LightInformation
 	{
 		DirectX::XMFLOAT3 m_lightPos;
-		DirectX::XMFLOAT4 m_lightColour;
 		float m_ambientStrenght;
+		DirectX::XMFLOAT4 m_lightColour;
 	};
 
 	ID3D11Device* device;
