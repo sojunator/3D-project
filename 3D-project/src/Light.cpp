@@ -1,19 +1,23 @@
 #include "inc\Light.h"
 
-Light::Light(DirectX::XMFLOAT3 lightPos, DirectX::XMFLOAT4 lightColour, float ambientStrenght, ID3D11Device* device)
+Light::Light(DirectX::XMFLOAT3 lightPos, DirectX::XMFLOAT4 lightColour, float ambientStrenght, DirectX::XMFLOAT3 cameraPos, ID3D11Device* device)
 {
+	m_constantBuffer = 0;
 	m_lightPos = lightPos;
 	m_lightColour = lightColour;
+	m_cameraPos = DirectX::XMFLOAT4(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f);
 	m_ambientStrenght = ambientStrenght;
 	this->device = device;
 }
 
 void Light::CreateConstantBuffer()
 {
+	Shutdown();
 	LightInformation cbData;
 	cbData.m_lightPos = m_lightPos;
 	cbData.m_lightColour = m_lightColour;
 	cbData.m_ambientStrenght = m_ambientStrenght;
+	cbData.m_cameraPos = m_cameraPos;
 
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(cbData);
@@ -34,6 +38,17 @@ void Light::CreateConstantBuffer()
 
 }
 
+void Light::updateLight(DirectX::XMFLOAT3 lightPos, DirectX::XMFLOAT4 lightColour, DirectX::XMFLOAT3 cameraPos, bool onoff)
+{
+	m_lightPos = lightPos;
+	m_lightColour = lightColour;
+	m_cameraPos = DirectX::XMFLOAT4(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f);
+
+	if (!onoff)
+		m_lightColour = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+
+}
+
 Light::Light()
 {
 
@@ -41,7 +56,7 @@ Light::Light()
 
 void Light::Shutdown()
 {
-	if (m_constantBuffer)
+	if (m_constantBuffer != nullptr)
 	{
 		m_constantBuffer->Release();
 		m_constantBuffer = 0;

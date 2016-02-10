@@ -7,7 +7,7 @@ class Model
 {
 public:
 	Model(ID3D11Device* device);
-	void Render(ID3D11DeviceContext* devcon, ID3D11Buffer* constantBuffer, DirectX::XMFLOAT3 CameraPosition);
+	void Render(ID3D11DeviceContext* devcon, ID3D11Buffer* constantBuffer);
 	int GetIndexCount();
 	void Shutdown();
 	~Model();
@@ -33,7 +33,7 @@ private:
 	};
 
 	bool InitializeBuffers(ID3D11Device* device);
-	void RenderBuffers(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight, DirectX::XMFLOAT3 CameraPosition);
+	void RenderBuffers(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight);
 	void ShutdownBuffers();
 
 };

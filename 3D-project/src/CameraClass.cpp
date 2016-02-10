@@ -64,10 +64,10 @@ void CameraClass::Render(POINT mouseOffset)
 	yaw += xoffset;
 	roll = m_rotationZ * 0.0174532925f;
 
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
+	if (pitch > DirectX::XM_PI/2.01f) // CAN NOT BE 90
+		pitch = DirectX::XM_PI / 2.01f;
+	if (pitch < -DirectX::XM_PI / 2.01f)
+		pitch = -DirectX::XM_PI / 2.01f;
 
 	// Create our rotation matrix
 	rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);

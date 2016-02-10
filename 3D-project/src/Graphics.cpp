@@ -27,10 +27,11 @@ Graphics::Graphics(HWND handle)
 	m_Shader = new ShaderClass;
 
 	// Create light array, this array handles all lights an its information
-	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 0.0f, -4.0f);
+	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
 	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
 	float ambientStrenght = 0.1f;
-	m_lights = Light(lightPos, lightColour, ambientStrenght, m_DirectX->GetDevice());
+	m_lights = Light(lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
+
 	m_lights.CreateConstantBuffer();
 
 	// Initialize the color shader object.
@@ -40,6 +41,11 @@ Graphics::Graphics(HWND handle)
 
 bool Graphics::Update(float dt)
 {
+	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 6.0f, -4.0f);
+	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
+	float ambientStrenght = 0.1f;
+	m_lights.updateLight(lightPos, lightColour, m_Camera->GetPosition(), TRUE);
+	m_lights.CreateConstantBuffer();
 	return true;
 }
 
@@ -54,7 +60,7 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
 	m_Camera->Render(mousePos);
-	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer(), m_Camera->GetPosition());
+	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 	m_DirectX->PresentScene();
 

@@ -10,6 +10,7 @@ cbuffer LightInfo : register(b1)
 	float3 m_lightPos;
 	float m_ambientStrenght;
 	float4 m_lightColour;
+	float4 m_cameraPos;
 }
 
 struct PixelInput
@@ -34,5 +35,13 @@ float4 PS_main(PixelInput input) : SV_TARGET
 	float diff = Kd * max(dot(normal, lightDir), 0);
 	float4 diffuse = diff * m_lightColour;
 
-	return Texture.Sample(ss, input.tex) * (ambient + diffuse);
+	float3 viewPos = m_cameraPos.xyz;
+	float SpecularStrenght = 0.5f;
+	float3 viewDir = normalize(viewPos - input.worldPos.xyz);
+	float3 reflectDir = reflect(-lightDir, normal);
+	float reflection = max(dot(viewDir, reflectDir), 0.0f);
+	float spec = pow(reflection, 32);
+	float3 specular = SpecularStrenght * Ks * spec * m_lightColour.xyz;
+
+	return Texture.Sample(ss, input.tex) * (ambient + diffuse + float4(specular, 1.0f));
 }
