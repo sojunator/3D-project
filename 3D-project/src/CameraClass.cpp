@@ -101,7 +101,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 	}
 	if (wasd[1])
 	{
-		this->SetPosition(m_positionX - 2 * dt, m_positionY, m_positionZ);
+		this->SetPosition(m_positionX - 2 * dt*sinf(yaw+DirectX::XM_PI/2.0f), m_positionY, m_positionZ - 2 * dt*cosf(yaw + DirectX::XM_PI / 2.0f));
 	}
 
 	if (wasd[2])
@@ -111,7 +111,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 
 	if (wasd[3])
 	{
-		this->SetPosition(m_positionX + 2 * dt, m_positionY, m_positionZ);
+		this->SetPosition(m_positionX -  2 * dt*sinf(yaw - DirectX::XM_PI / 2.0f), m_positionY, m_positionZ - 2 * dt*cosf(yaw - DirectX::XM_PI / 2.0f));
 	}
 }
 
