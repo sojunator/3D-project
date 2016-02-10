@@ -1,20 +1,19 @@
 #include "inc\defines.h"
 #include "inc\Model.h"
 #include "inc\ObjLoader.h"
-#include "inc\CameraClass.h"
 #include "WICTextureLoader.h"
 
 
-Model::Model(ID3D11Device* device, CameraClass* camera)
+Model::Model(ID3D11Device* device)
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_constantBuffer = 0;
 
-	InitializeBuffers(device, camera);
+	InitializeBuffers(device);
 }
 
-bool Model::InitializeBuffers(ID3D11Device* device, CameraClass* camera)
+bool Model::InitializeBuffers(ID3D11Device* device)
 {
 	HRESULT hr;
 
@@ -48,19 +47,13 @@ bool Model::InitializeBuffers(ID3D11Device* device, CameraClass* camera)
 	}
 
 	// Create cb with material properties
-	CBuffer materials;
+	MaterialInfo materials;
 	materials.Kd = DirectX::XMFLOAT4(readData.materials[0].x, readData.materials[0].y, readData.materials[0].z, 0.0f); // need to make sure bytewith remains multiple of 16 
 	materials.Ka = DirectX::XMFLOAT4(readData.materials[1].x, readData.materials[1].y, readData.materials[1].z, 0.0f);
 	materials.Ks = DirectX::XMFLOAT4(readData.materials[2].x, readData.materials[2].y, readData.materials[2].z, 0.0f);
-	
-	float* campos = new float;
-	camera->GetPosition(campos);
-	materials.camPos = DirectX::XMFLOAT4(campos[1], campos[2], campos[3], 0);
-	
-	materials.LightPosition = DirectX::XMFLOAT4(0, 0, 0, 0);
 
 	D3D11_BUFFER_DESC material_cb;
-	material_cb.ByteWidth = sizeof(CBuffer);
+	material_cb.ByteWidth = sizeof(MaterialInfo);
 	material_cb.Usage = D3D11_USAGE_DYNAMIC;
 	material_cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	material_cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -136,7 +129,6 @@ bool Model::InitializeBuffers(ID3D11Device* device, CameraClass* camera)
 
 	delete[] vertices;
 	delete[] indices;
-	delete campos; //tror jag iaf
 
 	return true;
 }
