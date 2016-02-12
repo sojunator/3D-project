@@ -325,7 +325,10 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	color[3] = a;
 
 	// Clear the back buffer
-	 m_Devcon->ClearRenderTargetView(m_renderTargetViews[0], color);
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		m_Devcon->ClearRenderTargetView(m_renderTargetViews[i], color);
+	}
 
 	// Clear the depth buffer
 	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
