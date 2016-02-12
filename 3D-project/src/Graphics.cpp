@@ -26,6 +26,9 @@ Graphics::Graphics(HWND handle)
 	// Create the color shader object.
 	m_Shader = new ShaderClass;
 
+	// Initialize the color shader object.
+	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/VertexShader.hlsl", L"../3D-project/src/hlsl/PixelShader.hlsl");
+
 	// Create light array, this array handles all lights an its information
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
 	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
@@ -34,8 +37,7 @@ Graphics::Graphics(HWND handle)
 
 	m_lights.CreateConstantBuffer();
 
-	// Initialize the color shader object.
-	m_Shader->Initialize(m_DirectX->GetDevice(), handle);
+
 
 }
 

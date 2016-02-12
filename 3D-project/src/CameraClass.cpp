@@ -64,7 +64,7 @@ void CameraClass::Render(POINT mouseOffset)
 	yaw += xoffset;
 	roll = m_rotationZ * 0.0174532925f;
 
-	if (pitch > DirectX::XM_PI/2.01f) // CAN NOT BE 90
+	if (pitch > DirectX::XM_PI/2.01f) // CAN NOT BE 90 degs
 		pitch = DirectX::XM_PI / 2.01f;
 	if (pitch < -DirectX::XM_PI / 2.01f)
 		pitch = -DirectX::XM_PI / 2.01f;

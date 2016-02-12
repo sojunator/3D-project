@@ -7,7 +7,7 @@ class ShaderClass
 {
 public:
 	ShaderClass();
-	bool Initialize(ID3D11Device* device, HWND handle);
+	bool Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename);
 	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 	void ShutDown();
 	~ShaderClass();

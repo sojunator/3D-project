@@ -11,10 +11,10 @@ ShaderClass::ShaderClass()
 	m_sampleState = 0;
 }
 
-bool ShaderClass::Initialize(ID3D11Device* device, HWND handle)
+bool ShaderClass::Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	bool result;
-	result = InitializeShader(device, handle, L"../3D-project/src/hlsl/VertexShader.hlsl", L"../3D-project/src/hlsl/PixelShader.hlsl");
+	result = InitializeShader(device, handle, vsFilename, psFilename);
 	if (!result)
 		return false;
 	return true;
@@ -38,8 +38,6 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		{
 			MessageBox(hwnd, vsFilename, L"Missing shader file", MB_OK);
 		}
-
-
 	}
 
 	ID3D10Blob* pixelShaderBuffer;
@@ -55,8 +53,6 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		{
 			MessageBox(hwnd, psFilename, L"Missing shader file", MB_OK);
 		}
-
-		
 	}
 
 	hr = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);

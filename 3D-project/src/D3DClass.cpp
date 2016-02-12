@@ -124,7 +124,7 @@ bool D3DClass::Intialize()
 	hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView);
 	if (FAILED(hr))
 	{
-		MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of whobat?", MB_OK);
+		MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of a whobat?", MB_OK);
 		return false;
 	}
 	backBufferPtr->Release();
@@ -190,7 +190,7 @@ bool D3DClass::Intialize()
 	if (FAILED(hr))
 		MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
 
-	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView); // Disabled z buffer for now m_depthStencilView
+	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView); 
 
 	 //Configure rasterizer
 	D3D11_RASTERIZER_DESC rasterDesc;
