@@ -1,4 +1,5 @@
 #include "inc\D3DClass.h"
+#include "inc\defines.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -6,6 +7,81 @@
 D3DClass::D3DClass(HWND handle)
 {
 	m_handle = handle;
+}
+
+void D3DClass::CreateRenderTargetViews()
+{
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		m_renderTargetViews[i] = nullptr;
+		m_shaderResourceViews[i] = nullptr;
+		m_renderTargetTextures[i] = nullptr;
+	}
+	D3D11_RENDER_TARGET_VIEW_DESC rtvd;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shrvd;
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT hr;
+
+	ZeroMemory(&rtvd, sizeof(rtvd));
+	ZeroMemory(&shrvd, sizeof(shrvd));
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	// Configure our g-buffer texture
+	textureDesc.Width = W_WITDH;
+	textureDesc.Height = W_HEIGHT;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 4;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // first pass its a rt, second ints a shader resource
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		hr = m_Device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTextures[i]);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL, L"Failed to create rendertarget textures, exiting", L"Fatal error", MB_OK);
+			return;
+		}
+	}
+
+	rtvd.Format = textureDesc.Format;
+	rtvd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+	rtvd.Texture2D.MipSlice = 0;
+
+	// Create all the rt views
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+	 hr = m_Device->CreateRenderTargetView(m_renderTargetTextures[i], &rtvd, &m_renderTargetViews[i]);
+	 if (FAILED(hr))
+	 {
+		 MessageBox(NULL, L"Faled to create render target views", L"Fatal error", MB_OK);
+		 return;
+	 }
+	}
+
+	shrvd.Format = textureDesc.Format;
+	shrvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+	shrvd.Texture2D.MostDetailedMip = 0;
+	shrvd.Texture2D.MipLevels = 1;
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		hr = m_Device->CreateShaderResourceView(m_renderTargetTextures[i], &shrvd, &m_shaderResourceViews[i]);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL, L"Failed to create shaderresource", L"Fatal error", MB_OK);
+			return;
+		}
+	}
+}
+
+void D3DClass::SetRenderTargetViews()
+{
+	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
 }
 
 bool D3DClass::Intialize()
@@ -112,23 +188,23 @@ bool D3DClass::Intialize()
 		return false;
 	}
 
-	// setting backbufer
-	ID3D11Texture2D* backBufferPtr;
-	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL, L"Failed to get backbuffer", L"Im a whobat beep bap", MB_OK);
-		return false;
-	}
+	//// setting backbufer
+	//ID3D11Texture2D* backBufferPtr;
+	//hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	//if (FAILED(hr))
+	//{
+	//	MessageBox(NULL, L"Failed to get backbuffer", L"Im a whobat beep bap", MB_OK);
+	//	return false;
+	//}
 
-	hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView);
-	if (FAILED(hr))
-	{
-		MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of a whobat?", MB_OK);
-		return false;
-	}
-	backBufferPtr->Release();
-	backBufferPtr = 0; // Set it to null
+	//hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetViews[0]);
+	//if (FAILED(hr))
+	//{
+	//	MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of a whobat?", MB_OK);
+	//	return false;
+	//}
+	//backBufferPtr->Release();
+	//backBufferPtr = 0; // Set it to null
 
 
 	// z-buffer setup
@@ -190,8 +266,6 @@ bool D3DClass::Intialize()
 	if (FAILED(hr))
 		MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
 
-	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView); 
-
 	 //Configure rasterizer
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
@@ -235,62 +309,83 @@ bool D3DClass::Intialize()
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
 }
 
-void D3DClass::Clean3D()
-{
-	if (m_swapChain)
-	{
-		m_swapChain->SetFullscreenState(false, NULL);
-	}
-
-	if (m_rasterState)
-	{
-		m_rasterState->Release();
-		m_rasterState = 0;
-	}
-
-	if (m_depthStencilView)
-	{
-		m_depthStencilView->Release();
-		m_depthStencilView = 0;
-	}
-
-	if (m_depthStencilState)
-	{
-		m_depthStencilState->Release();
-		m_depthStencilState = 0;
-	}
-
-	if(m_depthStencilBuffer)
-	{
-		m_depthStencilBuffer->Release();
-		m_depthStencilBuffer = 0;
-	}
-
-	if (m_renderTargetView)
-	{
-		m_renderTargetView->Release();
-		m_renderTargetView = 0;
-	}
-
-	if (m_Devcon)
-	{
-		m_Devcon->Release();
-		m_Devcon = 0;
-	}
-
-	if (m_Device)
-	{
-		m_Device->Release();
-		m_Device = 0;
-	}
-
-	if (m_swapChain)
-	{
-		m_swapChain->Release();
-		m_swapChain = 0;
-	}
-
-}
+//void D3DClass::Clean3D()
+//{
+//	if (m_swapChain)
+//	{
+//		m_swapChain->SetFullscreenState(false, NULL);
+//	}
+//
+//	if (m_rasterState)
+//	{
+//		m_rasterState->Release();
+//		m_rasterState = 0;
+//	}
+//
+//	if (m_depthStencilView)
+//	{
+//		m_depthStencilView->Release();
+//		m_depthStencilView = 0;
+//	}
+//
+//	if (m_depthStencilState)
+//	{
+//		m_depthStencilState->Release();
+//		m_depthStencilState = 0;
+//	}
+//
+//	if(m_depthStencilBuffer)
+//	{
+//		m_depthStencilBuffer->Release();
+//		m_depthStencilBuffer = 0;
+//	}
+//
+//	if (m_renderTargetViews)
+//	{
+//		for (int i = 0; i < BUFFER_COUNT; i++)
+//		{
+//			m_renderTargetViews[i]->Release();
+//			m_renderTargetViews[i] = nullptr;
+//		}
+//	}
+//
+//	if (m_shaderResourceViews)
+//	{
+//		for (int i = 0; i < BUFFER_COUNT; i++)
+//		{
+//			m_shaderResourceViews[i]->Release();
+//			m_shaderResourceViews[i] = 0;
+//		}
+//	}
+//
+//	if (m_renderTargetTextures)
+//	{
+//		for (int i = 0; i < BUFFER_COUNT; i++)
+//		{
+//			m_renderTargetTextures[i]->Release();
+//			m_renderTargetTextures[i] = 0;
+//		}
+//	}
+//
+//	if (m_Devcon)
+//	{
+//		m_Devcon->Release();
+//		m_Devcon = 0;
+//	}
+//
+//	if (m_Device)
+//	{
+//		m_Device->Release();
+//		m_Device = 0;
+//	}
+//
+//	if (m_swapChain)
+//	{
+//		m_swapChain->Release();
+//		m_swapChain = 0;
+//	}
+//
+//}
 
 D3DClass::~D3DClass()
 {
@@ -307,7 +402,7 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	color[3] = a;
 
 	// Clear the back buffer
-	 m_Devcon->ClearRenderTargetView(m_renderTargetView, color);
+	 m_Devcon->ClearRenderTargetView(m_renderTargetViews[0], color);
 
 	// Clear the depth buffer
 	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -315,6 +410,7 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 
 
 }
+
 
 void D3DClass::ShutDown()
 {
@@ -348,10 +444,31 @@ void D3DClass::ShutDown()
 		m_depthStencilBuffer = 0;
 	}
 
-	if (m_renderTargetView)
+	if (m_renderTargetViews)
 	{
-		m_renderTargetView->Release();
-		m_renderTargetView = 0;
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_renderTargetViews[i]->Release();
+			m_renderTargetViews[i] = nullptr;
+		}
+	}
+
+	if (m_shaderResourceViews)
+	{
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_shaderResourceViews[i]->Release();
+			m_shaderResourceViews[i] = 0;
+		}
+	}
+
+	if (m_renderTargetTextures)
+	{
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_renderTargetTextures[i]->Release();
+			m_renderTargetTextures[i] = 0;
+		}
 	}
 
 	if (m_Devcon)

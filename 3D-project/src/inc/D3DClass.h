@@ -3,13 +3,13 @@
 
 #include "defines.h"
 
+#define BUFFER_COUNT 4
 
 class D3DClass
 {
 public:
 	D3DClass(HWND handle);
 	bool Intialize();
-	void Clean3D(); // release all comobjects
 	void InitScene(float r, float g, float b, float a);
 	void PresentScene();
 	ID3D11Device* GetDevice();
@@ -19,6 +19,9 @@ public:
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMAtrix);
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
 	void ShutDown();
+	void SetRenderTargetViews();
+
+	void CreateRenderTargetViews();
 
 	~D3DClass();
 private:
@@ -30,7 +33,9 @@ private:
 	IDXGISwapChain* m_swapChain = 0;
 	ID3D11Device* m_Device = 0;
 	ID3D11DeviceContext* m_Devcon = 0;
-	ID3D11RenderTargetView* m_renderTargetView = 0;
+	ID3D11RenderTargetView* m_renderTargetViews[BUFFER_COUNT];
+	ID3D11ShaderResourceView* m_shaderResourceViews[BUFFER_COUNT];
+	ID3D11Texture2D* m_renderTargetTextures[BUFFER_COUNT];
 	ID3D11Texture2D* m_depthStencilBuffer = 0;
 	ID3D11DepthStencilView* m_depthStencilView = 0;
 	ID3D11DepthStencilState* m_depthStencilState = 0;
@@ -38,6 +43,7 @@ private:
 	DirectX::XMMATRIX m_projectionMatrix;
 	DirectX::XMMATRIX m_worldMatrix;
 	DirectX::XMMATRIX m_orthoMatrix;
+
 
 };
 

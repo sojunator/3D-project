@@ -79,10 +79,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\hlsl\VertexShader.hlsl">
+    <FxCompile Include="src\hlsl\2_PixelShader .hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="src\hlsl\PixelShader.hlsl">
+    <FxCompile Include="src\hlsl\2_VertexShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\1_VertexShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\1_PixelShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

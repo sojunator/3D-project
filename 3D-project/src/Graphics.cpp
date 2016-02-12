@@ -12,6 +12,8 @@ Graphics::Graphics(HWND handle)
 	m_DirectX = new D3DClass(handle);
 	m_DirectX->Intialize();
 
+	m_DirectX->CreateRenderTargetViews();
+
 
 	// Create the camera object.
 	m_Camera = new CameraClass;
@@ -27,7 +29,7 @@ Graphics::Graphics(HWND handle)
 	m_Shader = new ShaderClass;
 
 	// Initialize the color shader object.
-	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/VertexShader.hlsl", L"../3D-project/src/hlsl/PixelShader.hlsl");
+	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
@@ -60,7 +62,10 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_DirectX->GetProjectionMatrix(projectionMatrix);
 
+	m_DirectX->SetRenderTargetViews();
 	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
+
+
 	m_Camera->Render(mousePos);
 	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
