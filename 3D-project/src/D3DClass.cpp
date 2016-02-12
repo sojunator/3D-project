@@ -309,83 +309,6 @@ bool D3DClass::Intialize()
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
 }
 
-//void D3DClass::Clean3D()
-//{
-//	if (m_swapChain)
-//	{
-//		m_swapChain->SetFullscreenState(false, NULL);
-//	}
-//
-//	if (m_rasterState)
-//	{
-//		m_rasterState->Release();
-//		m_rasterState = 0;
-//	}
-//
-//	if (m_depthStencilView)
-//	{
-//		m_depthStencilView->Release();
-//		m_depthStencilView = 0;
-//	}
-//
-//	if (m_depthStencilState)
-//	{
-//		m_depthStencilState->Release();
-//		m_depthStencilState = 0;
-//	}
-//
-//	if(m_depthStencilBuffer)
-//	{
-//		m_depthStencilBuffer->Release();
-//		m_depthStencilBuffer = 0;
-//	}
-//
-//	if (m_renderTargetViews)
-//	{
-//		for (int i = 0; i < BUFFER_COUNT; i++)
-//		{
-//			m_renderTargetViews[i]->Release();
-//			m_renderTargetViews[i] = nullptr;
-//		}
-//	}
-//
-//	if (m_shaderResourceViews)
-//	{
-//		for (int i = 0; i < BUFFER_COUNT; i++)
-//		{
-//			m_shaderResourceViews[i]->Release();
-//			m_shaderResourceViews[i] = 0;
-//		}
-//	}
-//
-//	if (m_renderTargetTextures)
-//	{
-//		for (int i = 0; i < BUFFER_COUNT; i++)
-//		{
-//			m_renderTargetTextures[i]->Release();
-//			m_renderTargetTextures[i] = 0;
-//		}
-//	}
-//
-//	if (m_Devcon)
-//	{
-//		m_Devcon->Release();
-//		m_Devcon = 0;
-//	}
-//
-//	if (m_Device)
-//	{
-//		m_Device->Release();
-//		m_Device = 0;
-//	}
-//
-//	if (m_swapChain)
-//	{
-//		m_swapChain->Release();
-//		m_swapChain = 0;
-//	}
-//
-//}
 
 D3DClass::~D3DClass()
 {
@@ -410,7 +333,6 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 
 
 }
-
 
 void D3DClass::ShutDown()
 {
