@@ -3,6 +3,7 @@
 
 DeferredShader::DeferredShader()
 {
+	m_vertexBuffer = 0;
 	m_vertexShader = 0;
 	m_pixelShader = 0;
 	m_layout = 0;
@@ -161,6 +162,12 @@ void DeferredShader::ShutdownShader()
 	{
 		m_vertexShader->Release();
 		m_vertexShader = 0;
+	}
+
+	if (m_vertexBuffer)
+	{
+		m_vertexBuffer->Release();
+		m_vertexBuffer = 0;
 	}
 }
 

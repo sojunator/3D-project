@@ -9,6 +9,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera = 0;
 	m_Model = 0;
 	m_Shader = 0;
+	m_ShaderLight = 0;
 
 	m_DirectX = new D3DClass(handle);
 	m_DirectX->Intialize();
@@ -28,10 +29,10 @@ Graphics::Graphics(HWND handle)
 
 	// Create the color shader object.
 	m_Shader = new ShaderClass;
-	m_ShaderLight = new DeferredShader;
+	//m_ShaderLight = new DeferredShader;
 	// Initialize the color shader object.
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl");
-	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
+	//m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
