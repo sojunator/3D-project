@@ -24,7 +24,7 @@ private:
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11SamplerState* m_sampleState;
 
-	bool InitializeShader(ID3D11Device* device, HWND shadername, WCHAR* shaderentrypoint, WCHAR* shaderversion);
+	bool InitializeShader(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob* blob, HWND errorString, WCHAR* dno);
 	bool SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);

@@ -1,5 +1,6 @@
 #include "inc\Graphic.h"
 #include "inc\Light.h"
+#include "inc\DeferredShader.h"
 #include <math.h>
 
 Graphics::Graphics(HWND handle)
@@ -27,9 +28,10 @@ Graphics::Graphics(HWND handle)
 
 	// Create the color shader object.
 	m_Shader = new ShaderClass;
-
+	m_ShaderLight = new DeferredShader;
 	// Initialize the color shader object.
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl");
+	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
@@ -66,9 +68,13 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
 
 
+	// First pass, geo
 	m_Camera->Render(mousePos);
 	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+
+	// Second pass, lights
+
 	m_DirectX->PresentScene();
 
 	return true;
@@ -84,6 +90,13 @@ void Graphics::Shutdown()
 	//	}
 	//	delete m_lights;
 	//}
+
+	if (m_ShaderLight)
+	{
+		m_ShaderLight->ShutDown();
+	    delete	m_ShaderLight;
+		m_ShaderLight = 0;
+	}
 
 	m_lights.Shutdown();
 

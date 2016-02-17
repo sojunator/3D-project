@@ -5,6 +5,7 @@
 #include "inc\defines.h"
 #include "inc\System.h"
 #include "inc\InputClass.h"
+#undef private
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -45,9 +46,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		DestroyWindow(wndHandle);
 	}
+	ID3D11Debug* debug;
+	(*(Graphics)((char*)controller + sizeof(HWND) + sizeof(HINSTANCE)) + sizeof(Light) + sizeof(float));
+	DXGIGetDebugInterface(__uuidof(IDXGIDebug), (void**)&debug);
 	controller->shutDown();
 	delete controller;
 	CoUninitialize();
+	debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
+	debug->Release();
 	return (int)msg.wParam;
 }
 

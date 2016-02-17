@@ -11,6 +11,7 @@
 #include "Model.h"
 #include "CameraClass.h"
 #include "ShaderClass.h"
+#include "DeferredShader.h"
 #include "Light.h"
 
 class Graphics
@@ -29,6 +30,8 @@ private:
 	CameraClass* m_Camera;
 	Model* m_Model;
 	ShaderClass* m_Shader;
+	DeferredShader* m_ShaderLight;
+
 };
 
 #endif

@@ -22,6 +22,7 @@
   <ItemGroup>
     <ClCompile Include="src\CameraClass.cpp" />
     <ClCompile Include="src\D3DClass.cpp" />
+    <ClCompile Include="src\DeferredShader.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\InputClass.cpp" />
     <ClCompile Include="src\Light.cpp" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClInclude Include="src\inc\CameraClass.h" />
     <ClInclude Include="src\inc\D3DClass.h" />
+    <ClInclude Include="src\inc\DeferredShader.h" />
     <ClInclude Include="src\inc\defines.h" />
     <ClInclude Include="src\inc\Graphic.h" />
     <ClInclude Include="src\inc\InputClass.h" />
@@ -53,11 +55,11 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VS_main</EntryPointName>
     </FxCompile>
-    <FxCompile Include="src\hlsl\2_PixelShader .hlsl">
+    <FxCompile Include="src\hlsl\2_PixelShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PS_main</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="src\hlsl\2_VertexShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

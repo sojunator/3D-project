@@ -45,6 +45,9 @@
     <ClCompile Include="src\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeferredShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inc\defines.h">
@@ -77,18 +80,21 @@
     <ClInclude Include="src\inc\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\inc\DeferredShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\hlsl\2_PixelShader .hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="src\hlsl\2_VertexShader.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="src\hlsl\1_VertexShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="src\hlsl\1_PixelShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\2_PixelShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\2_VertexShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>
