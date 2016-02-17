@@ -81,7 +81,21 @@ void D3DClass::CreateRenderTargetViews()
 
 void D3DClass::SetRenderTargetViews()
 {
+	ID3D11ShaderResourceView* shvs[4] = { 0, 0, 0, 0 };
+	m_Devcon->PSSetShaderResources(0, 4, shvs);
 	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
+}
+
+void D3DClass::SetBackBuffer()
+{
+	ID3D11RenderTargetView* rtvs[4] = { m_backBuffer, 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, m_depthStencilView);
+	//m_Devcon->OMSetRenderTargets(1, &m_backBuffer, m_depthStencilView);
+}
+
+void D3DClass::SetShaderResourceViews()
+{
+	m_Devcon->PSSetShaderResources(0, 4, m_shaderResourceViews);
 }
 
 bool D3DClass::Intialize()
@@ -188,23 +202,23 @@ bool D3DClass::Intialize()
 		return false;
 	}
 
-	//// setting backbufer
-	//ID3D11Texture2D* backBufferPtr;
-	//hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	//if (FAILED(hr))
-	//{
-	//	MessageBox(NULL, L"Failed to get backbuffer", L"Im a whobat beep bap", MB_OK);
-	//	return false;
-	//}
+	// setting backbufer
+	ID3D11Texture2D* backBufferPtr;
+	hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to get backbuffer", L"Im a whobat beep bap", MB_OK);
+		return false;
+	}
 
-	//hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetViews[0]);
-	//if (FAILED(hr))
-	//{
-	//	MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of a whobat?", MB_OK);
-	//	return false;
-	//}
-	//backBufferPtr->Release();
-	//backBufferPtr = 0; // Set it to null
+	hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_backBuffer);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to create backbuffer", L"Taking orders of a whobat?", MB_OK);
+		return false;
+	}
+	backBufferPtr->Release();
+	backBufferPtr = 0;
 
 
 	// z-buffer setup
@@ -412,6 +426,12 @@ void D3DClass::ShutDown()
 	{
 		m_swapChain->Release();
 		m_swapChain = 0;
+	}
+
+	if (m_backBuffer)
+	{
+		m_backBuffer->Release();
+		m_backBuffer = 0;
 	}
 
 	return;

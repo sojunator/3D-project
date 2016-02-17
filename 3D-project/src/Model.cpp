@@ -135,16 +135,11 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 	return true;
 }
 
-void Model::RenderBuffers(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight)
+void Model::RenderBuffers(ID3D11DeviceContext* devcon)
 {
 
 	unsigned int stride;
 	unsigned int offset;
-
-	ID3D11Buffer* buffers[2];
-
-	buffers[0] = m_constantBuffer;
-	buffers[1] = constantbufferLight;
 
 	stride = sizeof(Vertex);
 	offset = 0;
@@ -153,7 +148,7 @@ void Model::RenderBuffers(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbuf
 
 	devcon->PSSetShaderResources(0, 1, &m_pTexture);
 
-	devcon->PSSetConstantBuffers(0, 2, buffers);
+	devcon->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 
 	devcon->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
@@ -185,9 +180,9 @@ void Model::ShutdownBuffers()
 	m_constantBuffer = 0;
 }
 
-void Model::Render(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight)
+void Model::Render(ID3D11DeviceContext* devcon)
 {
-	RenderBuffers(devcon, constantbufferLight);
+	RenderBuffers(devcon);
 }
 
 int Model::GetIndexCount()

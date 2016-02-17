@@ -29,10 +29,10 @@ Graphics::Graphics(HWND handle)
 
 	// Create the color shader object.
 	m_Shader = new ShaderClass;
-	//m_ShaderLight = new DeferredShader;
+	m_ShaderLight = new DeferredShader;
 	// Initialize the color shader object.
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl");
-	//m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
+	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
@@ -43,14 +43,13 @@ Graphics::Graphics(HWND handle)
 	m_lights.CreateConstantBuffer();
 
 
-
 }
 
 bool Graphics::Update(float dt)
 {
 	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 6.0f, -4.0f);
 	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
-	float ambientStrenght = 0.1f;
+	float ambientStrenght = 0.0f;
 	m_lights.updateLight(lightPos, lightColour, m_Camera->GetPosition(), TRUE);
 	m_lights.CreateConstantBuffer();
 	return true;
@@ -65,17 +64,19 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_DirectX->GetProjectionMatrix(projectionMatrix);
 
-	m_DirectX->SetRenderTargetViews();
-	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
-
-
 	// First pass, geo
 	m_Camera->Render(mousePos);
-	m_Model->Render(m_DirectX->GetDeviceContext(), m_lights.GetConstantBuffer());
+	m_DirectX->SetRenderTargetViews();
+	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
+	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	// Second pass, lights
+	m_DirectX->SetBackBuffer(); // We need to draw into the backbuffer now.
+	m_DirectX->SetShaderResourceViews(); // Make the geo-data avaiable for ps
+	m_ShaderLight->Render(m_DirectX->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, m_lights.GetConstantBuffer());
 
+	// Swap buffers
 	m_DirectX->PresentScene();
 
 	return true;

@@ -4,7 +4,7 @@
 InputClass::InputClass()
 {
 	ShowCursor(false);
-	// All keys needs to be set too false
+	// All keys needs to be set to false
 	for (int i = 0; i < 256; i++)
 		m_keys[i] = false;
 

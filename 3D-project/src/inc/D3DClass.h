@@ -20,6 +20,8 @@ public:
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
 	void ShutDown();
 	void SetRenderTargetViews();
+	void SetShaderResourceViews();
+	void SetBackBuffer();
 
 	void CreateRenderTargetViews();
 
@@ -33,7 +35,7 @@ private:
 	IDXGISwapChain* m_swapChain = 0;
 	ID3D11Device* m_Device = 0;
 	ID3D11DeviceContext* m_Devcon = 0;
-	ID3D11RenderTargetView* m_renderTargetViews[BUFFER_COUNT];
+	ID3D11RenderTargetView* m_renderTargetViews[BUFFER_COUNT], *m_backBuffer;
 	ID3D11ShaderResourceView* m_shaderResourceViews[BUFFER_COUNT];
 	ID3D11Texture2D* m_renderTargetTextures[BUFFER_COUNT];
 	ID3D11Texture2D* m_depthStencilBuffer = 0;

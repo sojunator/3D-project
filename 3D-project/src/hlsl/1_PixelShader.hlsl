@@ -5,14 +5,6 @@ cbuffer MaterialInfo : register(b0)
 	float4 Kd;
 };
 
-cbuffer LightInfo : register(b1)
-{
-	float3 m_lightPos;
-	float m_ambientStrenght;
-	float4 m_lightColour;
-	float4 m_cameraPos;
-}
-
 struct PixelInput
 {
 	float4 PositionCS : SV_Position;
@@ -36,7 +28,7 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 {
 	PixelOut output;
 
-	output.normal = float4(input.NormalWS, 1.0);
+	output.normal = normalize(float4(input.NormalWS, 1.0));
 	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
 	output.specular = float4(Ks.xyz, 32);
 	output.position = float4(input.Position, 1.0);

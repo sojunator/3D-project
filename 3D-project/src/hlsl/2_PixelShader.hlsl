@@ -1,11 +1,11 @@
-cbuffer MaterialInfo : register(b0)
-{
-	float4 Ka;
-	float4 Ks;
-	float4 Kd;
-};
+Texture2DMS<float4, 4>  NormalTexture		: register(t0);
+Texture2DMS<float4, 4>  DiffuseTexture	: register(t1);
+Texture2DMS<float4, 4>  SpecularTexture	: register(t2);
+Texture2DMS<float4, 4>  PositionTexture	: register(t3);
 
-cbuffer LightInfo : register(b1)
+SamplerState ss : register(s0);
+
+cbuffer LightInfo : register(b0)
 {
 	float3 m_lightPos;
 	float m_ambientStrenght;
@@ -13,33 +13,38 @@ cbuffer LightInfo : register(b1)
 	float4 m_cameraPos;
 }
 
-struct PixelInput
-{
-	float4 PositionCS : SV_Position;
-	float2 Tex : TEXCOORD0;
-	float3 NormalWS : NORMALWS;
-	float3 Position : POSITIONWS;
-};
-
 struct PixelOut
 {
-	float4 normal : SV_Target0;
-	float4 diffuse : SV_Target1;
-	float4 specular : SV_Target2;
-	float4 position : SV_Target3;
+	float4 color;
 };
 
-Texture2D Texture : register(t0);
-SamplerState ss : register(s0);
+struct PixelInput
+{
+	float4 Position : SV_Position;
+};
 
-PixelOut PS_main(PixelInput input) : SV_TARGET
+
+float4 PS_main(PixelInput input) : SV_Target0
 {
 	PixelOut output;
 
-	output.normal = float4(input.NormalWS, 1.0);
-	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
-	output.specular = float4(Ks.xyz, 32);
-	output.position = float4(input.Position, 1.0);
+	float4 color = DiffuseTexture.Load(float3(input.Position.xy, 0), 0);
+	float4 normal = NormalTexture.Load(float3(input.Position.xy, 0), 0);
+	float4 specular = SpecularTexture.Load(float3(input.Position.xy, 0), 0);
+	float4 position = PositionTexture.Load(float3(input.Position.xy, 0), 0);
 
-	return output;
+	float4 ambient = m_ambientStrenght * m_lightColour;
+	float3 lightDir = normalize(m_lightPos - position.xyz);
+	float diff = specular.xyz * max(dot(normal.xyz, lightDir), 0);
+	float4 diffuse = diff * m_lightColour;
+
+	float3 viewPos = m_cameraPos.xyz;
+	float SpecularStrenght = 0.5;
+	float3 viewDir = normalize(viewPos - position.xyz);
+	float3 reflectDir = reflect(-lightDir, normal);
+	float reflection = max(dot(viewDir, reflectDir), 0.0f);
+	float spec = pow(reflection, specular.w);
+	float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
+
+	return color * (ambient + diffuse + float4(specularValue, 1.0f));
 }

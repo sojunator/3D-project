@@ -85,24 +85,38 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 	VerticeData verts[6];
 
 	verts[0].x = -1; // upper left corner
-	verts[0].y = -1;
+	verts[0].y = 1;
 	verts[0].z = 0;
 
 	verts[1].x = 1; // upper right corner
-	verts[1].y = -1;
+	verts[1].y = 1;
 	verts[1].z = 0;
 
 	verts[2].x = 1; // lower right corner;
-	verts[2].y = 1;
+	verts[2].y = -1;
 	verts[2].z = 0;
 	
 	verts[3] = verts[2];
 
 	verts[4].x = -1; // lower left corner;
-	verts[4].y = 1;
+	verts[4].y = -1;
 	verts[4].z = 0;
 
 	verts[5] = verts[0];
+
+	D3D11_BUFFER_DESC matrixBufferDesc;
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	hr = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to create constant buffer", L"THESE WORMS", MB_OK);
+	}
 
 
 	D3D11_SUBRESOURCE_DATA initData;
@@ -125,6 +139,30 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
+
+	// Create a texture sampler state description.
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Create the texture sampler state.
+	hr = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to create sampler on gpu", L"Sampler error", MB_OK);
+	}
+
 }
 
 void DeferredShader::ShutDown()
@@ -169,6 +207,12 @@ void DeferredShader::ShutdownShader()
 		m_vertexBuffer->Release();
 		m_vertexBuffer = 0;
 	}
+
+	if (m_matrixBuffer)
+	{
+		m_matrixBuffer->Release();
+		m_matrixBuffer = 0;
+	}
 }
 
 void DeferredShader::OutputShaderErrorMessage(ID3D10Blob* errorMsg, HWND hwnd, WCHAR* shaderFilename)
@@ -205,19 +249,23 @@ void DeferredShader::SetShaderParameters(ID3D11DeviceContext* devcon, const Dire
 	devcon->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 }
 
-void DeferredShader::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
+void DeferredShader::Render(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11Buffer* constantBufferLight)
 {
 	SetShaderParameters(devcon, world, view, projection);
-	RenderShader(devcon, indexCount);
+	RenderShader(devcon, constantBufferLight);
 }
 
-void DeferredShader::RenderShader(ID3D11DeviceContext* devcon, int indexCount)
+void DeferredShader::RenderShader(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight)
 {
+	UINT temp = 12;
+	UINT zero = 0;
 	devcon->IASetInputLayout(m_layout);
 	devcon->VSSetShader(m_vertexShader, NULL, 0);
 	devcon->PSSetShader(m_pixelShader, NULL, 0);
+	devcon->PSSetConstantBuffers(0, 1, &constantbufferLight);
 	devcon->PSSetSamplers(0, 1, &m_sampleState);
-	devcon->DrawIndexed(indexCount, 0, 0);
+	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &temp, &zero);
+	devcon->Draw(6, 0);
 }
 
 DeferredShader::~DeferredShader()
