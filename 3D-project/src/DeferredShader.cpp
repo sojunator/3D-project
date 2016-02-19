@@ -262,6 +262,7 @@ void DeferredShader::configureShader(ID3D11DeviceContext* devcon, const DirectX:
 	devcon->IASetInputLayout(m_layout);
 	devcon->VSSetShader(m_vertexShader, NULL, 0);
 	devcon->PSSetShader(m_pixelShader, NULL, 0);
+	devcon->GSSetShader(NULL, NULL, 0);
 
 	devcon->PSSetSamplers(0, 1, &m_sampleState);
 	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &temp, &zero);

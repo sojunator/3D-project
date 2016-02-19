@@ -97,6 +97,9 @@
     <FxCompile Include="src\hlsl\2_VertexShader.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+    <FxCompile Include="src\hlsl\1_GeometryShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

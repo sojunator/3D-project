@@ -32,7 +32,7 @@ Graphics::Graphics(HWND handle)
 	m_Shader = new ShaderClass;
 	m_ShaderLight = new DeferredShader;
 	// Initialize the color shader object.
-	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl");
+	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
@@ -66,7 +66,7 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	// First pass, geo
 	m_Camera->Render(mousePos);
 	m_DirectX->SetRenderTargetViews();
-	m_DirectX->InitScene(0.1f, 0.2f, 0.1f, 1.0f);
+	m_DirectX->InitScene(0.0f, 0.0f, 0.0f, 1.0f);
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 

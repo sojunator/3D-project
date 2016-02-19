@@ -473,8 +473,6 @@ void D3DClass::ShutDown()
 		m_backBuffer->Release();
 		m_backBuffer = 0;
 	}
-
-	return;
 }
 
 void D3DClass::PresentScene()

@@ -14,7 +14,7 @@
 #include "DeferredShader.h"
 #include "Light.h"
 
-#define AMOUNT_OF_LIGHTS 5
+#define AMOUNT_OF_LIGHTS 10
 
 class Graphics
 {

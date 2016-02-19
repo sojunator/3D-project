@@ -11,17 +11,17 @@ ShaderClass::ShaderClass()
 	m_sampleState = 0;
 }
 
-bool ShaderClass::Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename)
+bool ShaderClass::Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename, WCHAR* gsFilename)
 {
 	bool result;
-	result = InitializeShader(device, handle, vsFilename, psFilename);
+	result = InitializeShader(device, handle, vsFilename, psFilename, gsFilename);
 	if (!result)
 		return false;
 	return true;
 }
 
 
-bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename, WCHAR* gsFilename)
 {
 	HRESULT hr;
 	ID3D10Blob* errorMsg = 0;
@@ -55,6 +55,21 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		}
 	}
 
+	ID3D10Blob* geometryShaderBuffer;
+	hr = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_4_0", 0, 0, &geometryShaderBuffer, &errorMsg);
+	if (FAILED(hr))
+	{
+		if (errorMsg)
+		{
+			MessageBox(hwnd, L"Error compiling shader. Check output debug.", gsFilename, MB_OK);
+			OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+		}
+		else
+		{
+			MessageBox(hwnd, gsFilename, L"Missing shader file", MB_OK);
+		}
+	}
+
 	hr = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(hr))
 	{
@@ -65,6 +80,12 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	if (FAILED(hr))
 	{
 		MessageBox(hwnd, L"Failed to create pixel shader", L"Do anybody read this?", MB_OK);
+	}
+
+	hr = device->CreateGeometryShader(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(), NULL, &m_geometryShader);
+	if (FAILED(hr))
+	{
+		MessageBox(hwnd, L"Failed to create geometry shader", L"Do anybody read this?", MB_OK);
 	}
 
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
@@ -104,6 +125,8 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
+	geometryShaderBuffer->Release();
+	geometryShaderBuffer = 0;
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -152,6 +175,12 @@ void ShaderClass::ShutdownShader()
 	{
 		m_sampleState->Release();
 		m_sampleState = 0;
+	}
+
+	if (m_geometryShader)
+	{
+		m_geometryShader->Release();
+		m_geometryShader = 0;
 	}
 
 	if (m_matrixBuffer)
@@ -222,6 +251,7 @@ void ShaderClass::RenderShader(ID3D11DeviceContext* devcon, int indexCount)
 	devcon->IASetInputLayout(m_layout);
 	devcon->VSSetShader(m_vertexShader, NULL, 0);
 	devcon->PSSetShader(m_pixelShader, NULL, 0);
+	devcon->GSSetShader(m_geometryShader, NULL, 0);
 	devcon->PSSetSamplers(0, 1, &m_sampleState);
 	devcon->DrawIndexed(indexCount, 0, 0);
 }
