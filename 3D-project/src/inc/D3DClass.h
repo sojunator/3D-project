@@ -22,8 +22,10 @@ public:
 	void SetRenderTargetViews();
 	void SetShaderResourceViews();
 	void SetBackBuffer();
-
 	void CreateRenderTargetViews();
+	void SetBlendState();
+	void CreateBlendState();
+	void unBindBlendState();
 
 	~D3DClass();
 private:
@@ -42,6 +44,7 @@ private:
 	ID3D11DepthStencilView* m_depthStencilView = 0;
 	ID3D11DepthStencilState* m_depthStencilState = 0;
 	ID3D11RasterizerState* m_rasterState = 0;
+	ID3D11BlendState* m_blendState = 0;
 	DirectX::XMMATRIX m_projectionMatrix;
 	DirectX::XMMATRIX m_worldMatrix;
 	DirectX::XMMATRIX m_orthoMatrix;

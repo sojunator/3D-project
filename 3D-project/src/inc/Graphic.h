@@ -3,7 +3,7 @@
 
 // Vs header files
 #include <windows.h>
-
+#include <vector>
 
 // our header files
 #include "defines.h"
@@ -14,6 +14,8 @@
 #include "DeferredShader.h"
 #include "Light.h"
 
+#define AMOUNT_OF_LIGHTS 5
+
 class Graphics
 {
 public:
@@ -23,7 +25,7 @@ public:
 	void Shutdown();
 
 private:
-	Light m_lights;
+	std::vector<Light> m_lights;
 	float m_nrOfLights;
 	D3DClass* m_DirectX;
 	~Graphics();

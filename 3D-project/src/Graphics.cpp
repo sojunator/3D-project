@@ -2,6 +2,7 @@
 #include "inc\Light.h"
 #include "inc\DeferredShader.h"
 #include <math.h>
+#include <time.h>
 
 Graphics::Graphics(HWND handle)
 {
@@ -15,7 +16,7 @@ Graphics::Graphics(HWND handle)
 	m_DirectX->Intialize();
 
 	m_DirectX->CreateRenderTargetViews();
-
+	m_DirectX->CreateBlendState();
 
 	// Create the camera object.
 	m_Camera = new CameraClass;
@@ -35,30 +36,28 @@ Graphics::Graphics(HWND handle)
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 
 	// Create light array, this array handles all lights an its information
-	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -4.0f);
-	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
-	float ambientStrenght = 0.1f;
-	m_lights = Light(lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
-
-	m_lights.CreateConstantBuffer();
-
+	srand(time(NULL));
+	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
+	{
+		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(rand()% 4, rand() % 3, rand() % 4);
+		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), 1.0f);
+		float ambientStrenght = 0.1f / AMOUNT_OF_LIGHTS;
+		Light tempLight = Light(lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
+		tempLight.CreateConstantBuffer();
+		m_lights.push_back(tempLight);
+	}
 
 }
 
 bool Graphics::Update(float dt)
 {
-	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -1.0f);
-	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
-	float ambientStrenght = 0.5f;
-	m_lights.updateLight(lightPos, lightColour, m_Camera->GetPosition(), TRUE);
-	m_lights.CreateConstantBuffer();
 	return true;
 }
 
 bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 {
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-
+	m_DirectX->unBindBlendState();
 	m_Camera->HandleKeyInput(wasd, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
@@ -67,15 +66,19 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	// First pass, geo
 	m_Camera->Render(mousePos);
 	m_DirectX->SetRenderTargetViews();
-	m_DirectX->InitScene(sinf(dt) * 0.5f, sinf(dt) * 0.3f, 0.2f, 1.0f);
+	m_DirectX->InitScene(0.1f, 0.2f, 0.1f, 1.0f);
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	// Second pass, lights
 	m_DirectX->SetBackBuffer(); // We need to draw into the backbuffer now.
 	m_DirectX->SetShaderResourceViews(); // Make the geo-data avaiable for ps
-	m_ShaderLight->Render(m_DirectX->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, m_lights.GetConstantBuffer());
-
+	m_ShaderLight->configureShader(m_DirectX->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	m_DirectX->SetBlendState();
+	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
+	{
+		m_ShaderLight->Render(m_DirectX->GetDeviceContext(), m_lights[i].GetConstantBuffer());
+	}
 	// Swap buffers
 	m_DirectX->PresentScene();
 
@@ -100,7 +103,10 @@ void Graphics::Shutdown()
 		m_ShaderLight = 0;
 	}
 
-	m_lights.Shutdown();
+	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
+	{
+		m_lights[i].Shutdown();
+	}
 
 	// Release the color shader object.
 	if (m_Shader)

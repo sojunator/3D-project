@@ -249,22 +249,27 @@ void DeferredShader::SetShaderParameters(ID3D11DeviceContext* devcon, const Dire
 	devcon->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 }
 
-void DeferredShader::Render(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11Buffer* constantBufferLight)
+void DeferredShader::Render(ID3D11DeviceContext* devcon, ID3D11Buffer* constantBufferLight)
 {
-	SetShaderParameters(devcon, world, view, projection);
 	RenderShader(devcon, constantBufferLight);
+}
+
+void DeferredShader::configureShader(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
+{
+	UINT temp = 12;
+	UINT zero = 0;
+	SetShaderParameters(devcon, world, view, projection);
+	devcon->IASetInputLayout(m_layout);
+	devcon->VSSetShader(m_vertexShader, NULL, 0);
+	devcon->PSSetShader(m_pixelShader, NULL, 0);
+
+	devcon->PSSetSamplers(0, 1, &m_sampleState);
+	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &temp, &zero);
 }
 
 void DeferredShader::RenderShader(ID3D11DeviceContext* devcon, ID3D11Buffer* constantbufferLight)
 {
-	UINT temp = 12;
-	UINT zero = 0;
-	devcon->IASetInputLayout(m_layout);
-	devcon->VSSetShader(m_vertexShader, NULL, 0);
-	devcon->PSSetShader(m_pixelShader, NULL, 0);
 	devcon->PSSetConstantBuffers(0, 1, &constantbufferLight);
-	devcon->PSSetSamplers(0, 1, &m_sampleState);
-	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &temp, &zero);
 	devcon->Draw(6, 0);
 }
 

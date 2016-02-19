@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
+void D3DClass::unBindBlendState()
+{
+	m_Devcon->OMSetBlendState(NULL, NULL, 0xffffffff);
+}
+
 D3DClass::D3DClass(HWND handle)
 {
 	m_handle = handle;
@@ -79,6 +84,29 @@ void D3DClass::CreateRenderTargetViews()
 	}
 }
 
+void D3DClass::CreateBlendState()
+{
+	D3D11_BLEND_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.RenderTarget[0].BlendEnable = TRUE;
+	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;    // addition is default for this
+	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;      // use full source alpha
+	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;    // use no dest alpha
+	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	bd.IndependentBlendEnable = FALSE;    // only use RenderTarget[0]
+	bd.AlphaToCoverageEnable = TRUE;    // enable alpha-to-coverage
+	m_Device->CreateBlendState(&bd, &m_blendState);
+
+}
+
+void D3DClass::SetBlendState()
+{
+	m_Devcon->OMSetBlendState(m_blendState, 0, 0xffffffff);
+}
+
 void D3DClass::SetRenderTargetViews()
 {
 	ID3D11ShaderResourceView* shvs[4] = { 0, 0, 0, 0 };
@@ -89,7 +117,7 @@ void D3DClass::SetRenderTargetViews()
 void D3DClass::SetBackBuffer()
 {
 	ID3D11RenderTargetView* rtvs[4] = { m_backBuffer, 0, 0, 0 };
-	m_Devcon->OMSetRenderTargets(4, rtvs, m_depthStencilView);
+	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
 	//m_Devcon->OMSetRenderTargets(1, &m_backBuffer, m_depthStencilView);
 }
 
@@ -343,6 +371,12 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	{
 		m_Devcon->ClearRenderTargetView(m_renderTargetViews[i], color);
 	}
+	color[0] = 0;
+	color[1] = 0;
+	color[2] = 0;
+	color[3] = 0;
+
+	m_Devcon->ClearRenderTargetView(m_backBuffer, color);
 
 	// Clear the depth buffer
 	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -408,6 +442,12 @@ void D3DClass::ShutDown()
 			m_renderTargetTextures[i]->Release();
 			m_renderTargetTextures[i] = 0;
 		}
+	}
+
+	if (m_blendState)
+	{
+		m_blendState->Release();
+		m_blendState = 0;
 	}
 
 	if (m_Devcon)
