@@ -47,9 +47,9 @@ Graphics::Graphics(HWND handle)
 
 bool Graphics::Update(float dt)
 {
-	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 6.0f, -4.0f);
+	DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(0.0f, 1.0f, -1.0f);
 	DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.0f, 1.f, 1.0f);
-	float ambientStrenght = 0.0f;
+	float ambientStrenght = 0.5f;
 	m_lights.updateLight(lightPos, lightColour, m_Camera->GetPosition(), TRUE);
 	m_lights.CreateConstantBuffer();
 	return true;
