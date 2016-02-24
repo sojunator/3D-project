@@ -16,7 +16,7 @@ void ComputeShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* c
 	ID3DBlob* errorMsg = 0;
 	ID3DBlob* computerBuffer = 0;
 
-	hr = D3DCompileFromFile(csFilename, NULL, NULL, "CS_main", "cs_4_0", 0, 0, &computerBuffer, &errorMsg);
+	hr = D3DCompileFromFile(csFilename, NULL, NULL, "CS_main", "cs_5_0", 0, 0, &computerBuffer, &errorMsg);
 	if (FAILED(hr))
 	{
 		if (errorMsg)
@@ -35,7 +35,6 @@ void ComputeShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* c
 	{
 		MessageBox(handle, L"Failed to create computer shader", L"Fatal error", MB_OK);
 	}
-	errorMsg->Release();
 	computerBuffer->Release();
 }
 
@@ -55,5 +54,6 @@ void ComputeShader::Render(ID3D11DeviceContext* devcon, DirectX::XMFLOAT3 groups
 
 void ComputeShader::RenderShader(ID3D11DeviceContext* devcon, DirectX::XMFLOAT3 groups)
 {
+	devcon->CSSetShader(m_computeShader, NULL, NULL);
 	devcon->Dispatch((UINT)groups.x, (UINT)groups.y, (UINT)groups.z);
 }

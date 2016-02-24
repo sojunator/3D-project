@@ -11,6 +11,7 @@ Graphics::Graphics(HWND handle)
 	m_Model = 0;
 	m_Shader = 0;
 	m_ShaderLight = 0;
+	m_ComputeShader = 0;
 
 	m_DirectX = new D3DClass(handle);
 	m_DirectX->Intialize();
@@ -28,12 +29,16 @@ Graphics::Graphics(HWND handle)
 	m_Model = new Model(m_DirectX->GetDevice());
 
 
-	// Create the color shader object.
+	// Create all of our shaders
 	m_Shader = new ShaderClass;
 	m_ShaderLight = new DeferredShader;
-	// Initialize the color shader object.
+	m_ComputeShader = new ComputeShader;
+
+	// Initialize all of our shaders
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
+	m_ComputeShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_ComputeShader.hlsl");
+
 
 	// Create light array, this array handles all lights an its information
 	srand(time(NULL));
@@ -79,8 +84,9 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	}
 
 	// Third pass, postprocess
+	DirectX::XMFLOAT3 groups = DirectX::XMFLOAT3(20, 30, 1);
 	m_DirectX->PreparePostPass();
-
+	m_ComputeShader->Render(m_DirectX->GetDeviceContext(), groups);
 
 	// Swap buffers
 	m_DirectX->PresentScene();
@@ -90,14 +96,12 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 void Graphics::Shutdown()
 {
-	//if (m_lights) FOR lators
-	//{
-	//	for (int i = 0; i < nrOfLights; i++)
-	//	{
-	//		m_lights[i].Shutdown();
-	//	}
-	//	delete m_lights;
-	//}
+
+	if (m_ComputeShader)
+	{
+		m_ComputeShader->ShutDown();
+		m_ComputeShader = 0;
+	}
 
 	if (m_ShaderLight)
 	{

@@ -1,7 +1,7 @@
-Texture2DMS<float4, 4>  NormalTexture		: register(t0);
-Texture2DMS<float4, 4>  DiffuseTexture	: register(t1);
-Texture2DMS<float4, 4>  SpecularTexture	: register(t2);
-Texture2DMS<float4, 4>  PositionTexture	: register(t3);
+Texture2D NormalTexture		: register(t0);
+Texture2D DiffuseTexture	: register(t1);
+Texture2D SpecularTexture	: register(t2);
+Texture2D PositionTexture	: register(t3);
 
 SamplerState ss : register(s0);
 

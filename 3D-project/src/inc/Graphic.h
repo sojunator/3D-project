@@ -13,6 +13,7 @@
 #include "ShaderClass.h"
 #include "DeferredShader.h"
 #include "Light.h"
+#include "ComputeShader.h"
 
 #define AMOUNT_OF_LIGHTS 5
 
@@ -33,6 +34,7 @@ private:
 	Model* m_Model;
 	ShaderClass* m_Shader;
 	DeferredShader* m_ShaderLight;
+	ComputeShader* m_ComputeShader;
 
 };
 

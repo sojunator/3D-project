@@ -54,7 +54,7 @@ void D3DClass::CreateRenderTargetViews()
 	}
 
 	rtvd.Format = textureDesc.Format;
-	rtvd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+	rtvd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rtvd.Texture2D.MipSlice = 0;
 
 	// Create all the rt views
@@ -69,7 +69,7 @@ void D3DClass::CreateRenderTargetViews()
 	}
 
 	shrvd.Format = textureDesc.Format;
-	shrvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+	shrvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shrvd.Texture2D.MostDetailedMip = 0;
 	shrvd.Texture2D.MipLevels = 1;
 
@@ -109,15 +109,25 @@ void D3DClass::SetBlendState()
 
 void D3DClass::SetRenderTargetViews()
 {
-	ID3D11ShaderResourceView* shvs[4] = { 0, 0, 0, 0 };
-	m_Devcon->PSSetShaderResources(0, 4, shvs);
+	ID3D11ShaderResourceView* shvs[BUFFER_COUNT] = { 0, 0, 0, 0, 0 };
+	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shvs);
+	m_Devcon->PSSetShaderResources(0, BUFFER_COUNT, shvs);
 	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
 }
 
 void D3DClass::PreparePostPass()
 {
+	// Unbind all rendertargets
 	ID3D11RenderTargetView* rtvs[4] = { 0, 0, 0, 0 };
 	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
+
+	// Bind the shader resource for the compute shader
+	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[4], 0, 0, 0, 0 };
+	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shrsv);
+
+	// Bind the UAV for input
+	UINT initialCounts = -1;
+	m_Devcon->CSSetUnorderedAccessViews(0, 1, &m_backBuffer, &initialCounts);
 
 }
 
@@ -259,7 +269,7 @@ bool D3DClass::Intialize()
 		return false;
 	}
 
-	hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_backBuffer);
+	hr = m_Device->CreateUnorderedAccessView(backBufferPtr, NULL, &m_backBuffer);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Failed to create backbuffer", L"Taking orders of a whobat?", MB_OK);
@@ -276,7 +286,7 @@ bool D3DClass::Intialize()
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.SampleDesc.Count = 4;
+	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
@@ -398,7 +408,7 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	color[2] = 0;
 	color[3] = 0;
 
-	m_Devcon->ClearRenderTargetView(m_backBuffer, color);
+	m_Devcon->ClearUnorderedAccessViewFloat(m_backBuffer, color);
 
 	// Clear the depth buffer
 	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);

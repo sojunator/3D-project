@@ -44,7 +44,7 @@ private:
 	IDXGISwapChain* m_swapChain = 0;
 	ID3D11Device* m_Device = 0;
 	ID3D11DeviceContext* m_Devcon = 0;
-	ID3D11RenderTargetView* m_renderTargetViews[BUFFER_COUNT], *m_backBuffer;
+	ID3D11RenderTargetView* m_renderTargetViews[BUFFER_COUNT];
 	ID3D11ShaderResourceView* m_shaderResourceViews[BUFFER_COUNT];
 	ID3D11Texture2D* m_renderTargetTextures[BUFFER_COUNT];
 	ID3D11Texture2D* m_depthStencilBuffer = 0;
@@ -52,7 +52,7 @@ private:
 	ID3D11DepthStencilState* m_depthStencilState = 0;
 	ID3D11RasterizerState* m_rasterState = 0;
 	ID3D11BlendState* m_blendState = 0;
-	ID3D11UnorderedAccessView* m_uavPost = 0;
+	ID3D11UnorderedAccessView* m_backBuffer = 0;
 	DirectX::XMMATRIX m_projectionMatrix;
 	DirectX::XMMATRIX m_worldMatrix;
 	DirectX::XMMATRIX m_orthoMatrix;
