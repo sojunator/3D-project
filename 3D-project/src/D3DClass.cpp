@@ -37,7 +37,7 @@ void D3DClass::CreateRenderTargetViews()
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 4;
+	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // first pass its a rt, second ints a shader resource
 	textureDesc.CPUAccessFlags = 0;
@@ -114,11 +114,31 @@ void D3DClass::SetRenderTargetViews()
 	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
 }
 
+void D3DClass::PreparePostPass()
+{
+	ID3D11RenderTargetView* rtvs[4] = { 0, 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
+
+}
+
+void D3DClass::PrepareLightPass()
+{
+	SetBackBuffer(); // Draw into the last rendertargetview, which will be used in the post process pass
+	SetShaderResourceViews(); // Make the geo-data avaiable for ps
+}
+
+void D3DClass::PrePareGeoPass()
+{
+	unBindBlendState();
+	SetRenderTargetViews();
+	InitScene(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
 void D3DClass::SetBackBuffer()
 {
-	ID3D11RenderTargetView* rtvs[4] = { m_backBuffer, 0, 0, 0 };
+	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[4], 0, 0, 0 };
 	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
-	//m_Devcon->OMSetRenderTargets(1, &m_backBuffer, m_depthStencilView);
+
 }
 
 void D3DClass::SetShaderResourceViews()
@@ -203,9 +223,9 @@ bool D3DClass::Intialize()
 	scd.BufferDesc.Height = (float)W_HEIGHT;
 	scd.BufferDesc.Width = (float)W_WITDH;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scd.BufferUsage = DXGI_USAGE_UNORDERED_ACCESS;
 	scd.OutputWindow = m_handle;
-	scd.SampleDesc.Count = 4; // AA times 4
+	scd.SampleDesc.Count = 1; // AA times 4
 	scd.SampleDesc.Quality = 0;
 	scd.Windowed = TRUE;
 	scd.BufferDesc.RefreshRate.Numerator = 0; // change 0 to numerator for vsync
@@ -349,6 +369,8 @@ bool D3DClass::Intialize()
 	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 20.0f);
 	m_worldMatrix = DirectX::XMMatrixIdentity();
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
+
+
 }
 
 

@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CameraClass.cpp" />
+    <ClCompile Include="src\ComputeShader.cpp" />
     <ClCompile Include="src\D3DClass.cpp" />
     <ClCompile Include="src\DeferredShader.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inc\CameraClass.h" />
+    <ClInclude Include="src\inc\ComputeShader.h" />
     <ClInclude Include="src\inc\D3DClass.h" />
     <ClInclude Include="src\inc\DeferredShader.h" />
     <ClInclude Include="src\inc\defines.h" />

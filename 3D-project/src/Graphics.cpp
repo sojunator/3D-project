@@ -57,28 +57,31 @@ bool Graphics::Update(float dt)
 bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 {
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	m_DirectX->unBindBlendState();
+
 	m_Camera->HandleKeyInput(wasd, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_DirectX->GetProjectionMatrix(projectionMatrix);
 
 	// First pass, geo
+	m_DirectX->PrePareGeoPass();
 	m_Camera->Render(mousePos);
-	m_DirectX->SetRenderTargetViews();
-	m_DirectX->InitScene(0.0f, 0.0f, 0.0f, 1.0f);
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	// Second pass, lights
-	m_DirectX->SetBackBuffer(); // We need to draw into the backbuffer now.
-	m_DirectX->SetShaderResourceViews(); // Make the geo-data avaiable for ps
+	m_DirectX->PrepareLightPass();
 	m_ShaderLight->configureShader(m_DirectX->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	m_DirectX->SetBlendState();
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
 		m_ShaderLight->Render(m_DirectX->GetDeviceContext(), m_lights[i].GetConstantBuffer());
 	}
+
+	// Third pass, postprocess
+	m_DirectX->PreparePostPass();
+
+
 	// Swap buffers
 	m_DirectX->PresentScene();
 
