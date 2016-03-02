@@ -14,6 +14,7 @@
 #include "DeferredShader.h"
 #include "Light.h"
 #include "ComputeShader.h"
+#include "Terrain.h"
 
 #define AMOUNT_OF_LIGHTS 5
 

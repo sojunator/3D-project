@@ -31,6 +31,7 @@
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\ShaderClass.cpp" />
     <ClCompile Include="src\System.cpp" />
+    <ClCompile Include="src\TerrainClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\inc\CameraClass.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\inc\ObjLoader.h" />
     <ClInclude Include="src\inc\ShaderClass.h" />
     <ClInclude Include="src\inc\System.h" />
+    <ClInclude Include="src\inc\TerrainClass.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\hlsl\1_ComputeShader.hlsl">
