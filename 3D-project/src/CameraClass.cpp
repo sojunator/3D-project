@@ -89,7 +89,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 {
 	if (wasd[0])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x + 2 * sinf(yaw)*dt, m_position.y, m_position.z + 2 * cosf(yaw) * dt));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x + 2 * sinf(yaw)*dt, m_position.y - 2 * sinf(pitch)*dt, m_position.z + 2 * cosf(yaw) * dt));
 	}
 	if (wasd[1])
 	{
@@ -98,7 +98,7 @@ void CameraClass::HandleKeyInput(bool wasd[4], float dt)
 
 	if (wasd[2])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x - sinf(yaw)*dt, m_position.y, m_position.z - cosf(yaw) * dt));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - sinf(yaw)*dt, m_position.y + 2 * sinf(pitch)*dt, m_position.z - cosf(yaw) * dt));
 	}
 
 	if (wasd[3])

@@ -14,7 +14,7 @@
 #include "DeferredShader.h"
 #include "Light.h"
 #include "ComputeShader.h"
-#include "Terrain.h"
+#include "TerrainClass.h"
 
 #define AMOUNT_OF_LIGHTS 5
 
@@ -33,7 +33,9 @@ private:
 	~Graphics();
 	CameraClass* m_Camera;
 	Model* m_Model;
-	ShaderClass* m_Shader;
+	TerrainClass* m_map;
+	ShaderClass* m_ObjShader;
+	ShaderClass* m_TerrainShader;
 	DeferredShader* m_ShaderLight;
 	ComputeShader* m_ComputeShader;
 
