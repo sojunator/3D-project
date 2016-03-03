@@ -10,5 +10,6 @@
 #define W_HEIGHT 600
 #define W_WITDH 800
 #define OBJ_FOLDER_PATH std::string("../3D-project/src/obj/")
+#define TERRAIN_FOLDER_PATH std::string("../3D-project/src/heightmap/")
 
 #endif

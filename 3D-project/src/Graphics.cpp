@@ -9,8 +9,6 @@ Graphics::Graphics(HWND handle)
 	m_DirectX = 0;
 	m_Camera = 0;
 	m_Model = 0;
-	m_TerrainShader = 0;
-	m_ObjShader = 0;
 	m_ShaderLight = 0;
 	m_ComputeShader = 0;
 
@@ -31,17 +29,16 @@ Graphics::Graphics(HWND handle)
 
 	// Create the heighmap
 	m_map = new TerrainClass();
-	m_map->Initalize(m_DirectX->GetDevice());
+	m_map->Initalize(m_DirectX->GetDevice(), "Setup.txt");
 	
 
 	// Create all of our shaders
-	m_ObjShader = new ShaderClass;
-	m_TerrainShader = new ShaderClass;
+	m_Shader = new ShaderClass;
 	m_ShaderLight = new DeferredShader;
 	m_ComputeShader = new ComputeShader;
 
 	// Initialize all of our shaders
-	m_ObjShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
+	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 	m_ComputeShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_ComputeShader.hlsl");
 
@@ -78,11 +75,13 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_DirectX->PrePareGeoPass();
 	m_Camera->Render(mousePos);
 
-	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_ObjShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	m_map->Render(m_DirectX->GetDeviceContext());
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
-	/*m_map->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);*/
+	m_Model->Render(m_DirectX->GetDeviceContext());
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+
+
 
 	// Second pass, lights
 	m_DirectX->PrepareLightPass();
@@ -133,20 +132,12 @@ void Graphics::Shutdown()
 	}
 
 	// Release the color shader object.
-	if (m_ObjShader)
+	if (m_Shader)
 	{
-		m_ObjShader->ShutDown();
-		delete m_ObjShader;
-		m_ObjShader = 0;
+		m_Shader->ShutDown();
+		delete m_Shader;
+		m_Shader = 0;
 	}
-
-	if (m_TerrainShader)
-	{
-		m_TerrainShader->ShutDown();
-		delete m_TerrainShader;
-		m_TerrainShader = 0;
-	}
-
 	// Release the model object.
 	if (m_Model)
 	{

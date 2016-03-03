@@ -1,0 +1,4 @@
+Terrain_filename heightmap.bmp
+Terrain_height 257
+Terrain_width 257
+TerrainScaling 12.0

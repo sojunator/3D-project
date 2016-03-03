@@ -27,107 +27,122 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	HRESULT hr;
 	ID3D10Blob* errorMsg = 0;
 	ID3D10Blob* vertexShaderBuffer;
-	hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", 0, 0, &vertexShaderBuffer, &errorMsg);
-	if (FAILED(hr))
+	if (vsFilename != NULL)
 	{
-		if (errorMsg)
+		hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", 0, 0, &vertexShaderBuffer, &errorMsg);
+		if (FAILED(hr))
 		{
-			OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
-			MessageBox(hwnd, L"Error compiling shader. Check output debug.", vsFilename, MB_OK);
+			if (errorMsg)
+			{
+				OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+				MessageBox(hwnd, L"Error compiling shader. Check output debug.", vsFilename, MB_OK);
+			}
+			else
+			{
+				MessageBox(hwnd, vsFilename, L"Missing shader file", MB_OK);
+			}
 		}
-		else
-		{
-			MessageBox(hwnd, vsFilename, L"Missing shader file", MB_OK);
-		}
-	}
 
+		hr = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+		if (FAILED(hr))
+		{
+			MessageBox(hwnd, L"Failed to create vertex shader", L"Do anybody read this?", MB_OK);
+		}
+
+		D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+		polygonLayout[0].SemanticName = "SV_POSITION";
+		polygonLayout[0].SemanticIndex = 0;
+		polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		polygonLayout[0].InputSlot = 0;
+		polygonLayout[0].AlignedByteOffset = 0;
+		polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		polygonLayout[0].InstanceDataStepRate = 0;
+
+		polygonLayout[1].SemanticName = "NORMAL";
+		polygonLayout[1].SemanticIndex = 0;
+		polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		polygonLayout[1].InputSlot = 0;
+		polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		polygonLayout[1].InstanceDataStepRate = 0;
+
+		polygonLayout[2].SemanticName = "TEXCOORD";
+		polygonLayout[2].SemanticIndex = 0;
+		polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+		polygonLayout[2].InputSlot = 0;
+		polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		polygonLayout[2].InstanceDataStepRate = 0;
+
+		int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+		hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+		if (FAILED(hr))
+		{
+			MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
+		}
+
+		vertexShaderBuffer->Release();
+		vertexShaderBuffer = 0;
+
+	}
 	ID3D10Blob* pixelShaderBuffer;
-	hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", 0, 0, &pixelShaderBuffer, &errorMsg);
-	if (FAILED(hr))
+	if (psFilename != NULL)
 	{
-		if (errorMsg)
+		hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", 0, 0, &pixelShaderBuffer, &errorMsg);
+		if (FAILED(hr))
 		{
-			MessageBox(hwnd, L"Error compiling shader. Check output debug.", psFilename, MB_OK);
-			OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+			if (errorMsg)
+			{
+				MessageBox(hwnd, L"Error compiling shader. Check output debug.", psFilename, MB_OK);
+				OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+			}
+			else
+			{
+				MessageBox(hwnd, psFilename, L"Missing shader file", MB_OK);
+			}
 		}
-		else
-		{
-			MessageBox(hwnd, psFilename, L"Missing shader file", MB_OK);
-		}
-	}
 
+		hr = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+		if (FAILED(hr))
+		{
+			MessageBox(hwnd, L"Failed to create pixel shader", L"Do anybody read this?", MB_OK);
+		}
+
+		pixelShaderBuffer->Release();
+		pixelShaderBuffer = 0;
+	}
 	ID3D10Blob* geometryShaderBuffer;
-	hr = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_4_0", 0, 0, &geometryShaderBuffer, &errorMsg);
-	if (FAILED(hr))
+	if (gsFilename != NULL)
 	{
-		if (errorMsg)
+		
+		hr = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_4_0", 0, 0, &geometryShaderBuffer, &errorMsg);
+		if (FAILED(hr))
 		{
-			MessageBox(hwnd, L"Error compiling shader. Check output debug.", gsFilename, MB_OK);
-			OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+			if (errorMsg)
+			{
+				MessageBox(hwnd, L"Error compiling shader. Check output debug.", gsFilename, MB_OK);
+				OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
+			}
+			else
+			{
+				MessageBox(hwnd, gsFilename, L"Missing shader file", MB_OK);
+			}
 		}
-		else
+
+		hr = device->CreateGeometryShader(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(), NULL, &m_geometryShader);
+		if (FAILED(hr))
 		{
-			MessageBox(hwnd, gsFilename, L"Missing shader file", MB_OK);
+			MessageBox(hwnd, L"Failed to create geometry shader", L"Do anybody read this?", MB_OK);
 		}
-	}
 
-	hr = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
-	if (FAILED(hr))
-	{
-		MessageBox(hwnd, L"Failed to create vertex shader", L"Do anybody read this?", MB_OK);
-	}
-
-	hr = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
-	if (FAILED(hr))
-	{
-		MessageBox(hwnd, L"Failed to create pixel shader", L"Do anybody read this?", MB_OK);
-	}
-
-	hr = device->CreateGeometryShader(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(), NULL, &m_geometryShader);
-	if (FAILED(hr))
-	{
-		MessageBox(hwnd, L"Failed to create geometry shader", L"Do anybody read this?", MB_OK);
-	}
-
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
-	polygonLayout[0].SemanticName = "SV_POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "NORMAL";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "TEXCOORD";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
-	int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
-	hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
-	if (FAILED(hr))
-	{
-		MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
+		geometryShaderBuffer->Release();
+		geometryShaderBuffer = 0;
 	}
 
 	// We dont need the buffers anymore
-	vertexShaderBuffer->Release();
-	vertexShaderBuffer = 0;
-	pixelShaderBuffer->Release();
-	pixelShaderBuffer = 0;
-	geometryShaderBuffer->Release();
-	geometryShaderBuffer = 0;
+
+
+
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -249,6 +264,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX
 
 void ShaderClass::RenderShader(ID3D11DeviceContext* devcon, int indexCount)
 {
+
 	devcon->IASetInputLayout(m_layout);
 	devcon->VSSetShader(m_vertexShader, NULL, 0);
 	devcon->PSSetShader(m_pixelShader, NULL, 0);
