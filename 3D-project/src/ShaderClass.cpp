@@ -89,7 +89,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 			D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 			polygonLayout[0].SemanticName = "SV_POSITION";
 			polygonLayout[0].SemanticIndex = 0;
-			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 			polygonLayout[0].InputSlot = 0;
 			polygonLayout[0].AlignedByteOffset = 0;
 			polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;

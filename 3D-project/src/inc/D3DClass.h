@@ -17,6 +17,8 @@ public:
 	void PrepareLightPass();
 	void PreparePostPass();
 	void PrePareGeoPass();
+	void WireFrameState();
+	void DefualtState();
 	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMAtrix);
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);

@@ -28,7 +28,7 @@ void CS_main( uint3 DTid : SV_DispatchThreadID )
 	{
 		for (int y = 0; y < 7; y++)
 		{
-			Color += InputMap.Load(texturelocation + int3(x, y, 0)) * filter[x][y];
+			Color += saturate(InputMap.Load(texturelocation + int3(x, y, 0))) * filter[x][y];
 		}
 	}
 	OutputMap[DTid.xy] = Color;

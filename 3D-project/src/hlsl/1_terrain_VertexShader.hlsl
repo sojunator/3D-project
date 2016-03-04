@@ -13,16 +13,17 @@ struct PixelInput
 
 struct VertexInput
 {
-	float4 position : SV_POSITION;
+	float3 position : SV_POSITION;
 	float4 color : COLOR;
 };
 
 PixelInput VS_main(VertexInput input)
 {
 	PixelInput output;
-	input.position.w = 1.0f; // Its a position, hence last element equals 1
+	
+	float4 tempPos = float4(input.position.xyz, 1.0f);
 
-	output.position = mul(input.position, worldMatrix);
+	output.position = mul(tempPos, worldMatrix);
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 

@@ -78,9 +78,11 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_DirectX->PrePareGeoPass();
 	m_Camera->Render(mousePos);
 
+	m_DirectX->WireFrameState();
 	m_map->Render(m_DirectX->GetDeviceContext());
 	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
+	m_DirectX->DefualtState();
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 

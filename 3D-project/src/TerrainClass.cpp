@@ -139,7 +139,8 @@ void TerrainClass::SetTerrainCoordinates()
 		{
 			index = (m_width*i) + j;
 			m_heightMap[index].x = (float)j;
-			m_heightMap[index].y = -(float)i;
+			m_heightMap[index].z = -(float)i;
+
 			m_heightMap[index].z += (float)(m_height - 1);
 			m_heightMap[index].y /= m_heightScale;
 		}
@@ -239,6 +240,7 @@ void TerrainClass::Initalize(ID3D11Device* dev, std::string setupFilename)
 {
 	LoadSetupFile(setupFilename);
 	LoadBitmapHeightMap();
+	SetTerrainCoordinates();
 	BuildTerrainModel();
 	ShutdownHeightMap();
 
@@ -263,7 +265,7 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 	int index = 0;
 	float positionX, positionZ;
 
-	for (int i = 0; i < (m_height - 1); i++)
+	for (int i = 0; i < m_vertexCount; i++)
 	{
 		vertices[i].position = DirectX::XMFLOAT3(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z);
 		vertices[i].color = color;

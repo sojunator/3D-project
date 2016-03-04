@@ -156,6 +156,16 @@ void D3DClass::SetShaderResourceViews()
 	m_Devcon->PSSetShaderResources(0, 4, m_shaderResourceViews);
 }
 
+void D3DClass::DefualtState()
+{
+	m_Devcon->RSSetState(NULL);
+}
+
+void D3DClass::WireFrameState()
+{
+	m_Devcon->RSSetState(m_rasterState);
+}
+
 bool D3DClass::Intialize()
 {
 	HRESULT hr;
@@ -344,7 +354,7 @@ bool D3DClass::Intialize()
 	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
 	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
@@ -359,7 +369,7 @@ bool D3DClass::Intialize()
 	}
 
 	// set it
-	m_Devcon->RSSetState(m_rasterState);
+	m_Devcon->RSSetState(NULL);
 
 	// Configure viewport
 	D3D11_VIEWPORT viewport;
@@ -376,7 +386,7 @@ bool D3DClass::Intialize()
 
 	float fieldOfView = 3.141592654f / 4.0f;
 	float screenAspect = (float)W_WITDH / (float)W_HEIGHT;
-	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 20.0f);
+	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 200.0f);
 	m_worldMatrix = DirectX::XMMatrixIdentity();
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
 
