@@ -386,7 +386,7 @@ bool D3DClass::Intialize()
 
 	float fieldOfView = 3.141592654f / 4.0f;
 	float screenAspect = (float)W_WITDH / (float)W_HEIGHT;
-	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 5.0f, 2000.0f);
+	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 2000.0f);
 	m_worldMatrix = DirectX::XMMatrixIdentity();
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
 

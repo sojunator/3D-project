@@ -10,7 +10,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera = 0;
 	m_Model = 0;
 	m_ShaderLight = 0;
-	m_ComputeShader = 0;
+	m_GuassianShader = 0;
 
 	m_DirectX = new D3DClass(handle);
 	m_DirectX->Intialize();
@@ -36,15 +36,16 @@ Graphics::Graphics(HWND handle)
 	m_TerrainShader = new ShaderClass(ShaderClass::TERRAIN);
 	m_Shader = new ShaderClass(ShaderClass::OBJ);
 	m_ShaderLight = new DeferredShader;
-	m_ComputeShader = new ComputeShader;
+	m_GuassianShader = new ComputeShader;
+	m_passThrough = new ComputeShader;
 
 	// Initialize all of our shaders
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_TerrainShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_terrain_VertexShader.hlsl", L"../3D-project/src/hlsl/1_terrain_PixelShader.hlsl", NULL);
 
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
-	m_ComputeShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_ComputeShader.hlsl");
-
+	m_GuassianShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_GaussianCompute.hlsl");
+	m_passThrough->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_passThroughCompute.hlsl");
 
 	// Create light array, this array handles all lights an its information
 	srand(time(NULL));
@@ -119,8 +120,10 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	// Third pass, postprocess
 	DirectX::XMFLOAT3 groups = DirectX::XMFLOAT3(20, 30, 1);
 	m_DirectX->PreparePostPass();
-	m_ComputeShader->Render(m_DirectX->GetDeviceContext(), groups);
-
+	if (keys[VK_SPACE])
+		m_GuassianShader->Render(m_DirectX->GetDeviceContext(), groups);
+	else
+		m_passThrough->Render(m_DirectX->GetDeviceContext(), groups);
 	// Swap buffers
 	m_DirectX->PresentScene();
 
@@ -136,11 +139,18 @@ void Graphics::Shutdown()
 		m_TerrainShader = 0;
 	}
 
-	if (m_ComputeShader)
+	if (m_GuassianShader)
 	{
-		m_ComputeShader->ShutDown();
-		delete m_ComputeShader;
-		m_ComputeShader = 0;
+		m_GuassianShader->ShutDown();
+		delete 	m_GuassianShader;
+		m_GuassianShader = 0;
+	}
+
+	if (m_passThrough)
+	{
+		m_passThrough->ShutDown();
+		delete m_passThrough;
+		m_passThrough = 0;
 	}
 
 	if (m_ShaderLight)
