@@ -65,11 +65,11 @@ bool Graphics::Update(float dt)
 	return true;
 }
 
-bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
+bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 {
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
-	m_Camera->HandleKeyInput(wasd, dt);
+	m_Camera->HandleKeyInput(keys, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_DirectX->GetProjectionMatrix(projectionMatrix);

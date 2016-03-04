@@ -16,13 +16,13 @@
 #include "ComputeShader.h"
 #include "TerrainClass.h"
 
-#define AMOUNT_OF_LIGHTS 1
+#define AMOUNT_OF_LIGHTS 5
 
 class Graphics
 {
 public:
 	Graphics(HWND wndHandle);
-	bool Render(float dt, bool wasd[4], POINT mousePos);
+	bool Render(float dt, bool* keys, POINT mousePos);
 	bool Update(float dt);
 	void Shutdown();
 

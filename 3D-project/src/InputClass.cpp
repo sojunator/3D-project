@@ -32,26 +32,12 @@ LRESULT CALLBACK InputClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam,
 	switch (umsg)
 	{
 		case WM_KEYDOWN:
-			if (wparam == 0x57)
-				keyDown(0x57);
-			if (wparam == 0x53)
-				keyDown(0x53);
-			if (wparam == 0x41)
-				keyDown(0x41);
-			if (wparam == 0x44)
-				keyDown(0x44);
+			keyDown(wparam);
 			if (wparam == VK_ESCAPE)
 				PostQuitMessage(0);
 			break;
 		case WM_KEYUP:
-			if (wparam == 0x57)
-				keyUp(0x57);
-			if (wparam == 0x53)
-				keyUp(0x53);
-			if (wparam == 0x41)
-				keyUp(0x41);
-			if (wparam == 0x44)
-				keyUp(0x44);
+			keyUp(wparam);
 			if (wparam == VK_ESCAPE)
 				PostQuitMessage(0);
 
@@ -75,9 +61,4 @@ void InputClass::keyDown(unsigned int key)
 void InputClass::keyUp(unsigned int key)
 {
 	m_keys[key] = false;
-}
-
-bool InputClass::IsKeyPressed(unsigned int key)
-{
-	return m_keys[key];
 }

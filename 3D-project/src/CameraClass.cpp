@@ -85,25 +85,29 @@ void CameraClass::Render(POINT mouseOffset)
 
 }
 
-void CameraClass::HandleKeyInput(bool wasd[4], float dt)
+void CameraClass::HandleKeyInput(bool* keys, float dt)
 {
-	if (wasd[0])
+	int boost = 0;
+	if (keys[VK_SHIFT])
+		boost = 20;
+
+	if (keys['W'])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x + 2 * sinf(yaw)*dt, m_position.y - 2 * sinf(pitch)*dt, m_position.z + 2 * cosf(yaw) * dt));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x + (2+boost) * sinf(yaw)*dt, m_position.y - (2 + boost) * sinf(pitch)*dt, m_position.z + (2 + boost) * cosf(yaw) * dt));
 	}
-	if (wasd[1])
+	if (keys['A'])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x - 2 * dt*sinf(yaw+DirectX::XM_PI/2.0f), m_position.y, m_position.z - 2 * dt*cosf(yaw + DirectX::XM_PI / 2.0f)));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - (2 + boost) * dt*sinf(yaw+DirectX::XM_PI/2.0f), m_position.y, m_position.z - (2 + boost) * dt*cosf(yaw + DirectX::XM_PI / 2.0f)));
 	}
 
-	if (wasd[2])
+	if (keys['S'])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x - sinf(yaw)*dt, m_position.y + 2 * sinf(pitch)*dt, m_position.z - cosf(yaw) * dt));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - sinf(yaw)*dt, m_position.y + (2 + boost) * sinf(pitch)*dt, m_position.z - cosf(yaw) * dt));
 	}
 
-	if (wasd[3])
+	if (keys['D'])
 	{
-		this->SetPosition(DirectX::XMFLOAT3(m_position.x -  2 * dt*sinf(yaw - DirectX::XM_PI / 2.0f), m_position.y, m_position.z - 2 * dt*cosf(yaw - DirectX::XM_PI / 2.0f)));
+		this->SetPosition(DirectX::XMFLOAT3(m_position.x - (2 + boost) * dt*sinf(yaw - DirectX::XM_PI / 2.0f), m_position.y, m_position.z - (2 + boost) * dt*cosf(yaw - DirectX::XM_PI / 2.0f)));
 	}
 }
 
