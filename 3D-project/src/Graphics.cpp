@@ -78,17 +78,36 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	m_DirectX->PrePareGeoPass();
 	m_Camera->Render(mousePos);
 
-	m_DirectX->WireFrameState();
+	static bool wireframe = false;
+	if (wireframe)
+	{
+		m_DirectX->WireFrameState();
+		if (keys[VK_PRIOR])
+		{
+			wireframe = false;
+		}
+	}
+	else
+	{
+		m_DirectX->DefualtState();
+		if (keys[VK_NEXT])
+		{
+			wireframe = true;
+		}
+	}
+
+
 	m_map->Render(m_DirectX->GetDeviceContext());
 	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
-	m_DirectX->DefualtState();
+
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 
 
 	// Second pass, lights
+	m_DirectX->DefualtState();
 	m_DirectX->PrepareLightPass();
 	m_ShaderLight->configureShader(m_DirectX->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	m_DirectX->SetBlendState();
