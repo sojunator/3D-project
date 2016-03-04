@@ -34,6 +34,7 @@ private:
 	CameraClass* m_Camera;
 	Model* m_Model;
 	TerrainClass* m_map;
+	ShaderClass* m_TerrainShader;
 	ShaderClass* m_Shader;
 	DeferredShader* m_ShaderLight;
 	ComputeShader* m_ComputeShader;

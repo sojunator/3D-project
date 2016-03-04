@@ -33,12 +33,15 @@ Graphics::Graphics(HWND handle)
 	
 
 	// Create all of our shaders
-	m_Shader = new ShaderClass;
+	m_TerrainShader = new ShaderClass(ShaderClass::TERRAIN);
+	m_Shader = new ShaderClass(ShaderClass::OBJ);
 	m_ShaderLight = new DeferredShader;
 	m_ComputeShader = new ComputeShader;
 
 	// Initialize all of our shaders
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
+	m_TerrainShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_terrain_VertexShader.hlsl", L"../3D-project/src/hlsl/1_terrain_PixelShader.hlsl", NULL);
+
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 	m_ComputeShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_ComputeShader.hlsl");
 
@@ -76,7 +79,7 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 	m_Camera->Render(mousePos);
 
 	m_map->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
@@ -105,10 +108,17 @@ bool Graphics::Render(float dt, bool wasd[4], POINT mousePos)
 
 void Graphics::Shutdown()
 {
+	if (m_TerrainShader)
+	{
+		m_TerrainShader->ShutDown();
+		delete m_TerrainShader;
+		m_TerrainShader = 0;
+	}
 
 	if (m_ComputeShader)
 	{
 		m_ComputeShader->ShutDown();
+		delete m_ComputeShader;
 		m_ComputeShader = 0;
 	}
 

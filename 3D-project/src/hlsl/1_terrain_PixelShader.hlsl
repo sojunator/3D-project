@@ -6,5 +6,5 @@ struct PixelInput
 
 float4 PS_main(PixelInput input) : SV_TARGET
 {
-	return input.color
+	return input.color;
 }

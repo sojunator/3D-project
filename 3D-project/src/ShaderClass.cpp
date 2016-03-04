@@ -2,8 +2,9 @@
 #include "inc\defines.h"
 #include <string>
 
-ShaderClass::ShaderClass()
+ShaderClass::ShaderClass(ShaderType shader)
 {
+	m_shaderType = shader;
 	m_vertexShader = 0;
 	m_pixelShader = 0;
 	m_geometryShader = 0;
@@ -48,39 +49,67 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 		{
 			MessageBox(hwnd, L"Failed to create vertex shader", L"Do anybody read this?", MB_OK);
 		}
-
-		D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
-		polygonLayout[0].SemanticName = "SV_POSITION";
-		polygonLayout[0].SemanticIndex = 0;
-		polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		polygonLayout[0].InputSlot = 0;
-		polygonLayout[0].AlignedByteOffset = 0;
-		polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		polygonLayout[0].InstanceDataStepRate = 0;
-
-		polygonLayout[1].SemanticName = "NORMAL";
-		polygonLayout[1].SemanticIndex = 0;
-		polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		polygonLayout[1].InputSlot = 0;
-		polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		polygonLayout[1].InstanceDataStepRate = 0;
-
-		polygonLayout[2].SemanticName = "TEXCOORD";
-		polygonLayout[2].SemanticIndex = 0;
-		polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-		polygonLayout[2].InputSlot = 0;
-		polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		polygonLayout[2].InstanceDataStepRate = 0;
-
-		int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
-		hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
-		if (FAILED(hr))
+		if (m_shaderType == OBJ)
 		{
-			MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
+			D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+			polygonLayout[0].SemanticName = "SV_POSITION";
+			polygonLayout[0].SemanticIndex = 0;
+			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			polygonLayout[0].InputSlot = 0;
+			polygonLayout[0].AlignedByteOffset = 0;
+			polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[0].InstanceDataStepRate = 0;
+
+			polygonLayout[1].SemanticName = "NORMAL";
+			polygonLayout[1].SemanticIndex = 0;
+			polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[1].InputSlot = 0;
+			polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[1].InstanceDataStepRate = 0;
+
+			polygonLayout[2].SemanticName = "TEXCOORD";
+			polygonLayout[2].SemanticIndex = 0;
+			polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+			polygonLayout[2].InputSlot = 0;
+			polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[2].InstanceDataStepRate = 0;
+
+			int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+			hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+			if (FAILED(hr))
+			{
+				MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
+			}
 		}
 
+		if (m_shaderType == TERRAIN)
+		{
+			D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+			polygonLayout[0].SemanticName = "SV_POSITION";
+			polygonLayout[0].SemanticIndex = 0;
+			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[0].InputSlot = 0;
+			polygonLayout[0].AlignedByteOffset = 0;
+			polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[0].InstanceDataStepRate = 0;
+
+			polygonLayout[1].SemanticName = "COLOR";
+			polygonLayout[1].SemanticIndex = 0;
+			polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[1].InputSlot = 0;
+			polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[1].InstanceDataStepRate = 0;
+
+			int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+			hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+			if (FAILED(hr))
+			{
+				MessageBox(hwnd, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
+			}
+		}
 		vertexShaderBuffer->Release();
 		vertexShaderBuffer = 0;
 
