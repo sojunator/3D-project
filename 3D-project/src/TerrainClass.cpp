@@ -1,4 +1,5 @@
 #include "inc\TerrainClass.h"
+#include "WICTextureLoader.h"
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -63,6 +64,12 @@ void TerrainClass::Shutdown()
 	{
 		m_indexBuffer->Release();
 		m_indexBuffer = 0;
+	}
+
+	if (m_texture)
+	{
+		m_texture->Release();
+		m_texture = 0;
 	}
 
 	ShutdownHeightMap();
@@ -166,36 +173,48 @@ void TerrainClass::BuildTerrainModel()
 			m_terrainModel[index].x = m_heightMap[index1].x;
 			m_terrainModel[index].y = m_heightMap[index1].y;
 			m_terrainModel[index].z = m_heightMap[index1].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 0.0f;
 			index++;
 
 			// Triangle 1 upper right
 			m_terrainModel[index].x = m_heightMap[index2].x;
 			m_terrainModel[index].y = m_heightMap[index2].y;
 			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
 			index++;
 
 			// triangle 1 lower left
 			m_terrainModel[index].x = m_heightMap[index3].x;
 			m_terrainModel[index].y = m_heightMap[index3].y;
 			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
 			index++;
 
 			// Triangle 2 lower left
 			m_terrainModel[index].x = m_heightMap[index3].x;
 			m_terrainModel[index].y = m_heightMap[index3].y;
 			m_terrainModel[index].z = m_heightMap[index3].z;
+			m_terrainModel[index].tu = 0.0f;
+			m_terrainModel[index].tv = 1.0f;
 			index++;
 
 			//Triangle 2 upper right
 			m_terrainModel[index].x = m_heightMap[index2].x;
 			m_terrainModel[index].y = m_heightMap[index2].y;
 			m_terrainModel[index].z = m_heightMap[index2].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 0.0f;
 			index++;
 
 			// Triangle 2 lower right
 			m_terrainModel[index].x = m_heightMap[index4].x;
 			m_terrainModel[index].y = m_heightMap[index4].y;
 			m_terrainModel[index].z = m_heightMap[index4].z;
+			m_terrainModel[index].tu = 1.0f;
+			m_terrainModel[index].tv = 1.0f;
 			index++;
 		}
 	}
@@ -205,7 +224,7 @@ void TerrainClass::LoadSetupFile(std::string filename)
 {
 	std::istringstream inputString;
 	std::ifstream setup_file(TERRAIN_FOLDER_PATH + filename);
-	std::string tempLine, special;
+	std::string tempLine, special, tempTexture;
 	while (std::getline(setup_file, tempLine))
 	{
 		inputString.str(tempLine);
@@ -230,6 +249,13 @@ void TerrainClass::LoadSetupFile(std::string filename)
 		if (tempLine.substr(8, 3) == "sca")
 		{
 			inputString >> special >> m_heightScale;
+		}
+
+		if (tempLine.substr(8, 3) == "tex")
+		{
+			inputString >> special >> tempTexture;
+			tempTexture = TERRAIN_FOLDER_PATH + tempTexture;
+			m_terrainTexture = std::wstring(tempTexture.begin(), tempTexture.end());
 		}
 
 		inputString.clear();
@@ -268,7 +294,7 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 	for (int i = 0; i < m_vertexCount; i++)
 	{
 		vertices[i].position = DirectX::XMFLOAT3(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z);
-		vertices[i].color = color;
+		vertices[i].texture = DirectX::XMFLOAT2(m_terrainModel[i].tu, m_terrainModel[i].tv);
 		indices[i] = i;
 	}
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -310,5 +336,13 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 
 	delete indices;
 	indices = 0;
+
+	wchar_t* fuckasci = const_cast<wchar_t*> (m_terrainTexture.c_str());
+	hr = DirectX::CreateWICTextureFromFile(device, NULL, fuckasci, NULL, &m_texture, 0);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to load texture for heightmap", L"Fatal error", MB_OK);
+	}
+
 
 }

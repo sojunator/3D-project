@@ -9,6 +9,7 @@ public:
 	Model(ID3D11Device* device);
 	void Render(ID3D11DeviceContext* devcon);
 	int GetIndexCount();
+	ID3D11ShaderResourceView* GetTexture() { return m_pTexture; };
 	void Shutdown();
 	~Model();
 private:

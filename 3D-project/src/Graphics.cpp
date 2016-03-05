@@ -99,11 +99,11 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 
 	m_map->Render(m_DirectX->GetDeviceContext());
-	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_map->GetTexture());
 
 
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
 
 
 
@@ -120,6 +120,7 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	// Third pass, postprocess
 	DirectX::XMFLOAT3 groups = DirectX::XMFLOAT3(20, 30, 1);
 	m_DirectX->PreparePostPass();
+	// If space, then blur
 	if (keys[VK_SPACE])
 		m_GuassianShader->Render(m_DirectX->GetDeviceContext(), groups);
 	else

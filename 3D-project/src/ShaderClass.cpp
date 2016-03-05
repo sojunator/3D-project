@@ -95,9 +95,9 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 			polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			polygonLayout[0].InstanceDataStepRate = 0;
 
-			polygonLayout[1].SemanticName = "COLOR";
+			polygonLayout[1].SemanticName = "TEXCOORD";
 			polygonLayout[1].SemanticIndex = 0;
-			polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 			polygonLayout[1].InputSlot = 0;
 			polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -262,7 +262,7 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMsg, HWND hwnd, WCHA
 	//errorMsg->Release();
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
+bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -287,7 +287,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX
 
 	bufferNumber = 0;
 	devcon->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-	
+	devcon->PSSetShaderResources(0, 1, &texture);
+
 	return true;
 }
 
@@ -312,11 +313,11 @@ ShaderClass::~ShaderClass()
 
 }
 
-bool ShaderClass::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
+bool ShaderClass::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture)
 {
 	bool result;
 
-	result = SetShaderParameters(devcon, world, view, projection);
+	result = SetShaderParameters(devcon, world, view, projection, texture);
 	if (!result)
 		MessageBox(NULL, L"Failed to set shader params", L"Shit son", MB_OK);
 

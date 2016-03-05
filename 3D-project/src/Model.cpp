@@ -35,7 +35,7 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 		v.position.y = readData.vertices[f.x - 1].y;
 		v.position.z = readData.vertices[f.x - 1].z;
 
-		v.uvCords.x = 1 - readData.uvCords[f.y - 1].u; // And we flip some shit
+		v.uvCords.x = 1 - readData.uvCords[f.y - 1].u; // And we now flip some shit
 		v.uvCords.y = 1 - readData.uvCords[f.y - 1].v; // 
 
 		v.normal.x = readData.normals[f.z - 1].x;
@@ -73,7 +73,6 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 
 	// Load texture
 	LPCTSTR filename = L"../3D-project/src/obj/default_tex.png";
-	ID3D11Resource* texture;
 	hr = DirectX::CreateWICTextureFromFile(device, NULL, filename, NULL, &m_pTexture, 0);
 
 	if (FAILED(hr))
@@ -145,8 +144,6 @@ void Model::RenderBuffers(ID3D11DeviceContext* devcon)
 	offset = 0;
 
 	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
-
-	devcon->PSSetShaderResources(0, 1, &m_pTexture);
 
 	devcon->PSSetConstantBuffers(0, 1, &m_constantBuffer);
 
