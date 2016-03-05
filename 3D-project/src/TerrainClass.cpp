@@ -186,7 +186,6 @@ void TerrainClass::CalculateNormals()
 			vector1[0] = (vertex1[0] - vertex3[0]);
 			vector1[1] = (vertex1[1] - vertex3[1]);
 			vector1[2] = (vertex1[2] - vertex3[2]);
-
 			vector2[0] = (vertex3[0] - vertex2[0]);
 			vector2[1] = (vertex3[1] - vertex2[1]);
 			vector2[2] = (vertex3[2] - vertex2[2]);
@@ -198,7 +197,7 @@ void TerrainClass::CalculateNormals()
 			normals[index].z = (vector1[0] * vector2[1] - vector1[1] * vector2[0]);
 
 			// Normalize
-			len = (float)sqrt(((normals[index].x*normals[index].x) + (normals[index].y * normals[index].y) + (normals[index].z + normals[index].z)));
+			len = (float)sqrt(((normals[index].x*normals[index].x) + (normals[index].y * normals[index].y) + (normals[index].z * normals[index].z)));
 			normals[index].x = normals[index].x / len;
 			normals[index].y = normals[index].y / len;
 			normals[index].z = normals[index].z / len;
@@ -216,6 +215,7 @@ void TerrainClass::CalculateNormals()
 			sum[2] = 0.0f;
 
 			// bottom left face
+
 			if (((j - 1) >= 0) && ((i - 1) >= 0))
 			{
 				index = ((i - 1) * (m_width - 1)) + (j - 1);
@@ -227,7 +227,7 @@ void TerrainClass::CalculateNormals()
 			// bottom right face
 			if ((j < (m_width - 1)) && ((i - 1) >= 0))
 			{
-				index = ((i- 1) * (m_width - 1)) + j;
+				index = ((i - 1) * (m_width - 1)) + j;
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
@@ -244,7 +244,7 @@ void TerrainClass::CalculateNormals()
 
 			if ((j < (m_width - 1)) && (i < (m_height - 1)))
 			{
-				index = (i* (m_width - 1)) + j;
+				index = (i * (m_width - 1)) + j;
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
 				sum[2] += normals[index].z;
