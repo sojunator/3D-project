@@ -86,7 +86,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 
 		if (m_shaderType == TERRAIN)
 		{
-			D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+			D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 			polygonLayout[0].SemanticName = "SV_POSITION";
 			polygonLayout[0].SemanticIndex = 0;
 			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -102,6 +102,14 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 			polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 			polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			polygonLayout[1].InstanceDataStepRate = 0;
+
+			polygonLayout[2].SemanticName = "NORMAL";
+			polygonLayout[2].SemanticIndex = 0;
+			polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			polygonLayout[2].InputSlot = 0;
+			polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[2].InstanceDataStepRate = 0;
 
 			int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 			hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);

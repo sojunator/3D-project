@@ -2,6 +2,7 @@ struct PixelInput
 {
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD;
+	float3 normal : NORMAL;
 };
 
 struct PixelOut
@@ -20,7 +21,7 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 	PixelOut output;
 	output.position = input.position;
 	output.diffuse = Texture.Sample(ss, input.tex);
-	output.normal = float4(0.0f, 1.0f, 0.0f, 0.0f);
-	output.specular = input.position;
+	output.normal = normalize(float4(input.normal, 0.0));
+	output.specular = float4(0.3f, 0.3f, 0.3f, 0.0f);
 	return output;
 }

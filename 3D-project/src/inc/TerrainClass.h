@@ -10,15 +10,23 @@ public:
 	{
 		DirectX::XMFLOAT3 position;
 		DirectX::XMFLOAT2 texture;
+		DirectX::XMFLOAT3 normal;
 	};
 	struct HeightMapType
 	{
 		float x, y, z;
+		float nx, ny, nz;
 	};
 	struct ModelType
 	{
 		float x, y, z;
 		float tu, tv;
+		float nx, ny, nz;
+	};
+
+	struct Vector
+	{
+		float x, y, z;
 	};
 
 	TerrainClass();
@@ -37,6 +45,7 @@ private:
 	void SetTerrainCoordinates();
 	void BuildTerrainModel();
 	void ShutdownTerrainModel();
+	void CalculateNormals();
 
 	int m_height, m_width;
 	int m_vertexCount, m_indexCount;

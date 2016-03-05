@@ -24,7 +24,7 @@ struct PixelInput
 };
 
 
-float4 PS_main(PixelInput input) : SV_Target0
+float3 PS_main(PixelInput input) : SV_Target0
 {
 	PixelOut output;
 
@@ -46,5 +46,5 @@ float4 PS_main(PixelInput input) : SV_Target0
 	float spec = pow(reflection, 16);
 	float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
 
-	return color; //* (ambient + diffuse) + float4(specularValue, 1.0f);
+	return normal;//color * (ambient + diffuse) + float4(specularValue, 1.0f);
 }
