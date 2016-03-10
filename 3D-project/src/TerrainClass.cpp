@@ -78,6 +78,116 @@ void TerrainClass::Shutdown()
 	ShutdownTerrainModel();
 }
 
+void TerrainClass::CalculateTerrainVectors()
+{
+	int faceCount, index;
+	Vector tangent, binormal;
+	verts vertex1, vertex2, vertex3;
+
+	faceCount = m_vertexCount / 3;
+	index = 0;
+
+	for (int i = 0; i < faceCount; i++)
+	{
+		vertex1.position.x = m_terrainModel[index].x;
+		vertex1.position.y = m_terrainModel[index].y;
+		vertex1.position.z = m_terrainModel[index].z;
+		vertex1.texture.x = m_terrainModel[index].tu;
+		vertex1.texture.y = m_terrainModel[index].tv;
+		vertex1.normal.x = m_terrainModel[index].nx;
+		vertex1.normal.y = m_terrainModel[index].ny;
+		vertex1.normal.z = m_terrainModel[index].nz;
+		index++;
+
+		vertex2.position.x = m_terrainModel[index].x;
+		vertex2.position.y = m_terrainModel[index].y;
+		vertex2.position.z = m_terrainModel[index].z;
+		vertex2.texture.x = m_terrainModel[index].tu;
+		vertex2.texture.y = m_terrainModel[index].tv;
+		vertex2.normal.x = m_terrainModel[index].nx;
+		vertex2.normal.y = m_terrainModel[index].ny;
+		vertex2.normal.z = m_terrainModel[index].nz;
+		index++;
+
+		vertex3.position.x = m_terrainModel[index].x;
+		vertex3.position.y = m_terrainModel[index].y;
+		vertex3.position.z = m_terrainModel[index].z;
+		vertex3.texture.x = m_terrainModel[index].tu;
+		vertex3.texture.y = m_terrainModel[index].tv;
+		vertex3.normal.x = m_terrainModel[index].nx;
+		vertex3.normal.y = m_terrainModel[index].ny;
+		vertex3.normal.z = m_terrainModel[index].nz;
+		index++;
+
+		CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
+		// Now we have the data for the face
+		m_terrainModel[index - 1].tx = tangent.x;
+		m_terrainModel[index - 1].ty = tangent.y;
+		m_terrainModel[index - 1].tz = tangent.z;
+		m_terrainModel[index - 1].bx = binormal.x;
+		m_terrainModel[index - 1].by = binormal.y;
+		m_terrainModel[index - 1].bz = binormal.z;
+
+		m_terrainModel[index - 2].tx = tangent.x;
+		m_terrainModel[index - 2].ty = tangent.y;
+		m_terrainModel[index - 2].tz = tangent.z;
+		m_terrainModel[index - 2].bx = binormal.x;
+		m_terrainModel[index - 2].by = binormal.y;
+		m_terrainModel[index - 2].bz = binormal.z;
+
+		m_terrainModel[index - 3].tx = tangent.x;
+		m_terrainModel[index - 3].ty = tangent.y;
+		m_terrainModel[index - 3].tz = tangent.z;
+		m_terrainModel[index - 3].bx = binormal.x;
+		m_terrainModel[index - 3].by = binormal.y;
+		m_terrainModel[index - 3].bz = binormal.z;
+	}
+
+}
+
+void TerrainClass::CalculateTangentBinormal(verts vertex1, verts vertex2, verts vertex3, Vector& tangent, Vector& binormal)
+{
+	float vector1[3], vector2[3];
+	float tuVector[2], tvVector[3];
+	float den;
+	float len;
+
+	vector1[0] = vertex1.position.x - vertex2.position.x;
+	vector1[1] = vertex1.position.y - vertex2.position.y;
+	vector1[2] = vertex1.position.z - vertex2.position.z;
+
+	vector2[0] = vertex1.position.x - vertex3.position.x;
+	vector2[1] = vertex1.position.y - vertex3.position.y;
+	vector2[2] = vertex1.position.z - vertex3.position.z;
+
+	tuVector[0] = vertex1.texture.x - vertex2.texture.x;
+	tuVector[1] = vertex1.texture.y - vertex2.texture.y;
+
+	tvVector[0] = vertex3.texture.x - vertex2.texture.x;
+	tuVector[1] = vertex3.texture.y - vertex2.texture.y;
+
+	// calculate the invers matrix for uv
+	den = 1.0f / (tuVector[0]*tvVector[1] - tuVector[1]*tvVector[0]);
+
+	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	len = sqrtf((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+	tangent.x /= len;
+	tangent.y /= len;
+	tangent.z /= len;
+
+	len = sqrtf((binormal.x*binormal.x) + (binormal.y * binormal.y) + (binormal.z*binormal.z));
+	binormal.x /= len;
+	binormal.y /= len;
+	binormal.z /= len;
+}
+
 void TerrainClass::LoadBitmapHeightMap()
 {
 	BITMAPFILEHEADER bitmapFileHeader;
@@ -385,6 +495,13 @@ void TerrainClass::LoadSetupFile(std::string filename)
 			m_terrainTexture = std::wstring(tempTexture.begin(), tempTexture.end());
 		}
 
+		if (tempLine.substr(8, 3) == "nor")
+		{
+			inputString >> special >> tempTexture;
+			tempTexture = TERRAIN_FOLDER_PATH + tempTexture;
+			m_terrainNormalMap = std::wstring(tempTexture.begin(), tempTexture.end());
+		}
+
 		inputString.clear();
 	}
 }
@@ -396,6 +513,7 @@ void TerrainClass::Initalize(ID3D11Device* dev, std::string setupFilename)
 	SetTerrainCoordinates();
 	CalculateNormals();
 	BuildTerrainModel();
+	CalculateTerrainVectors();
 	ShutdownHeightMap();
 
 	// Create buffers
@@ -424,6 +542,8 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 		vertices[i].position = DirectX::XMFLOAT3(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z);
 		vertices[i].texture = DirectX::XMFLOAT2(m_terrainModel[i].tu, m_terrainModel[i].tv);
 		vertices[i].normal = DirectX::XMFLOAT3(m_terrainModel[i].nx, m_terrainModel[i].ny, m_terrainModel[i].nz);
+		vertices[i].tangent = DirectX::XMFLOAT3(m_terrainModel[i].tx, m_terrainModel[i].ty, m_terrainModel[i].tz);
+		vertices[i].binormal = DirectX::XMFLOAT3(m_terrainModel[i].bx, m_terrainModel[i].by, m_terrainModel[i].bz);
 		indices[i] = i;
 	}
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

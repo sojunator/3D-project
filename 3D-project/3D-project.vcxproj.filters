@@ -124,6 +124,12 @@
     <FxCompile Include="src\hlsl\1_passThroughCompute.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+    <FxCompile Include="src\hlsl\2_Normal_VertexShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="src\hlsl\2_Normal_PixelShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

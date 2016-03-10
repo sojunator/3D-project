@@ -11,6 +11,8 @@ public:
 		DirectX::XMFLOAT3 position;
 		DirectX::XMFLOAT2 texture;
 		DirectX::XMFLOAT3 normal;
+		DirectX::XMFLOAT3 tangent;
+		DirectX::XMFLOAT3 binormal;
 	};
 	struct HeightMapType
 	{
@@ -21,6 +23,8 @@ public:
 	{
 		float x, y, z;
 		float tu, tv;
+		float tx, ty, tz;
+		float bx, by, bz;
 		float nx, ny, nz;
 	};
 
@@ -46,12 +50,14 @@ private:
 	void BuildTerrainModel();
 	void ShutdownTerrainModel();
 	void CalculateNormals();
+	void CalculateTerrainVectors();
+	void CalculateTangentBinormal(verts vertex1, verts vertex2, verts vertex3, Vector& tangent, Vector& binormal);
 
 	int m_height, m_width;
 	int m_vertexCount, m_indexCount;
 	float m_heightScale;
 	std::string m_terrainFileName;
-	std::wstring m_terrainTexture;
+	std::wstring m_terrainTexture, m_terrainNormalMap;
 	HeightMapType* m_heightMap;
 	ID3D11ShaderResourceView* m_texture;
 	ID3D11Buffer*  m_vertexBuffer, *m_indexBuffer;

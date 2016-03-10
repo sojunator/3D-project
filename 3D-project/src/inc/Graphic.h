@@ -16,7 +16,7 @@
 #include "ComputeShader.h"
 #include "TerrainClass.h"
 
-#define AMOUNT_OF_LIGHTS 1
+#define AMOUNT_OF_LIGHTS 10
 
 class Graphics
 {
@@ -37,6 +37,7 @@ private:
 	ShaderClass* m_TerrainShader;
 	ShaderClass* m_Shader;
 	DeferredShader* m_ShaderLight;
+	DeferredShader* m_ShaderNormal;
 	ComputeShader* m_GuassianShader;
 	ComputeShader* m_passThrough;
 

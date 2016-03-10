@@ -6,7 +6,8 @@
 class DeferredShader
 {
 public:
-	DeferredShader();
+	enum ShaderType { NORMAL, NONORMAL };
+	DeferredShader(ShaderType);
 	void configureShader(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 	bool Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename);
 	void Render(ID3D11DeviceContext* deviceContext, ID3D11Buffer* constantbufferLight);
@@ -30,6 +31,7 @@ private:
 	ID3D11InputLayout* m_layout;
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11SamplerState* m_sampleState;
+	ShaderType m_shadertype;
 
 	void InitializeShader(ID3D11Device* device, HWND shadername, WCHAR* vsFilename, WCHAR* psFilename);
 	void ShutdownShader();
