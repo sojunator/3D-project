@@ -81,7 +81,7 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 		MessageBox(handle, L"Failed to create input layout for vertex shader", L"CRAWLING IN MY SKIN", MB_OK);
 	}
 
-
+	// sloby commit
 	VerticeData verts[6];
 
 	verts[0].x = -1; // upper left corner
