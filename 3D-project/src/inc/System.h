@@ -17,7 +17,7 @@ public:
 	~System();
 private:
 	void checkKeyStrokes();
-	bool wasd[4];
+	bool* m_keys;
 	float dt;
 	HWND wndHandle;
 	HINSTANCE m_hinstance;

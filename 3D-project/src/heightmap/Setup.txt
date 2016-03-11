@@ -1,0 +1,6 @@
+Terrain_filename heightmap.bmp
+Terrain_height 257
+Terrain_width 257
+Terrain_scaling 12.0
+Terrain_texture debug_texture.png
+Terrain_normalMap dirt01n.png

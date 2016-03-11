@@ -16,7 +16,8 @@ System::System(HWND handle, InputClass* inputHandle)
 
 bool System::Render()
 {
-	m_Graphics->Render(dt, wasd, m_InputHandler->mousePos(wndHandle));
+    m_keys = m_InputHandler->keyState();
+	m_Graphics->Render(dt, m_keys, m_InputHandler->mousePos(wndHandle));
 	return true;
 }
 bool System::Update()
@@ -29,10 +30,7 @@ bool System::Update()
 
 void System::checkKeyStrokes()
 {
-	wasd[0] = m_InputHandler->IsKeyPressed(0x57);
-	wasd[1] = m_InputHandler->IsKeyPressed(0x41);
-	wasd[2] = m_InputHandler->IsKeyPressed(0x53);
-	wasd[3] = m_InputHandler->IsKeyPressed(0x44);
+
 }
 
 void System::DeltaTime()

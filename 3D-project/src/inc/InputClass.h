@@ -8,7 +8,7 @@ class InputClass
 public:
 	InputClass();
 	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
-	bool IsKeyPressed(unsigned int key);
+	bool* keyState() { return m_keys; };
 	void keyUp(unsigned int key);
 	void keyDown(unsigned int key);
 	POINT mousePos(HWND handle);

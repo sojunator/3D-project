@@ -45,6 +45,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		DestroyWindow(wndHandle);
 	}
+	ID3D11Debug* debug;
 	controller->shutDown();
 	delete controller;
 	CoUninitialize();

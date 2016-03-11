@@ -1,11 +1,169 @@
 #include "inc\D3DClass.h"
+#include "inc\defines.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
+void D3DClass::unBindBlendState()
+{
+	m_Devcon->OMSetBlendState(NULL, NULL, 0xffffffff);
+}
+
 D3DClass::D3DClass(HWND handle)
 {
 	m_handle = handle;
+}
+
+void D3DClass::CreateRenderTargetViews()
+{
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		m_renderTargetViews[i] = nullptr;
+		m_shaderResourceViews[i] = nullptr;
+		m_renderTargetTextures[i] = nullptr;
+	}
+	D3D11_RENDER_TARGET_VIEW_DESC rtvd;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shrvd;
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT hr;
+
+	ZeroMemory(&rtvd, sizeof(rtvd));
+	ZeroMemory(&shrvd, sizeof(shrvd));
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	// Configure our g-buffer texture
+	textureDesc.Width = W_WITDH;
+	textureDesc.Height = W_HEIGHT;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // first pass its a rt, second ints a shader resource
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		hr = m_Device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTextures[i]);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL, L"Failed to create rendertarget textures, exiting", L"Fatal error", MB_OK);
+			return;
+		}
+	}
+
+	rtvd.Format = textureDesc.Format;
+	rtvd.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	rtvd.Texture2D.MipSlice = 0;
+
+	// Create all the rt views
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+	 hr = m_Device->CreateRenderTargetView(m_renderTargetTextures[i], &rtvd, &m_renderTargetViews[i]);
+	 if (FAILED(hr))
+	 {
+		 MessageBox(NULL, L"Faled to create render target views", L"Fatal error", MB_OK);
+		 return;
+	 }
+	}
+
+	shrvd.Format = textureDesc.Format;
+	shrvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shrvd.Texture2D.MostDetailedMip = 0;
+	shrvd.Texture2D.MipLevels = 1;
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		hr = m_Device->CreateShaderResourceView(m_renderTargetTextures[i], &shrvd, &m_shaderResourceViews[i]);
+		if (FAILED(hr))
+		{
+			MessageBox(NULL, L"Failed to create shaderresource", L"Fatal error", MB_OK);
+			return;
+		}
+	}
+}
+
+void D3DClass::CreateBlendState()
+{
+	D3D11_BLEND_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.RenderTarget[0].BlendEnable = TRUE;
+	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;    // addition is default for this
+	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;      // use full source alpha
+	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;    // use no dest alpha
+	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	bd.IndependentBlendEnable = FALSE;    // only use RenderTarget[0]
+	bd.AlphaToCoverageEnable = TRUE;    // enable alpha-to-coverage
+	m_Device->CreateBlendState(&bd, &m_blendState);
+
+}
+
+void D3DClass::SetBlendState()
+{
+	m_Devcon->OMSetBlendState(m_blendState, 0, 0xffffffff);
+}
+
+void D3DClass::SetRenderTargetViews()
+{
+	ID3D11ShaderResourceView* shvs[BUFFER_COUNT] = { 0, 0, 0, 0, 0 };
+	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shvs);
+	m_Devcon->PSSetShaderResources(0, BUFFER_COUNT, shvs);
+	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
+}
+
+void D3DClass::PreparePostPass()
+{
+	// Unbind all rendertargets
+	ID3D11RenderTargetView* rtvs[4] = { 0, 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
+
+	// Bind the shader resource for the compute shader
+	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[4], 0, 0, 0, 0 };
+	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shrsv);
+
+	// Bind the UAV for input
+	UINT initialCounts = -1;
+	m_Devcon->CSSetUnorderedAccessViews(0, 1, &m_backBuffer, &initialCounts);
+
+}
+
+void D3DClass::PrepareLightPass()
+{
+	SetBackBuffer(); // Draw into the last rendertargetview, which will be used in the post process pass
+	SetShaderResourceViews(); // Make the geo-data avaiable for ps
+}
+
+void D3DClass::PrePareGeoPass()
+{
+	unBindBlendState();
+	SetRenderTargetViews();
+	InitScene(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void D3DClass::SetBackBuffer()
+{
+	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[4], 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
+
+}
+
+void D3DClass::SetShaderResourceViews()
+{
+	m_Devcon->PSSetShaderResources(0, 4, m_shaderResourceViews);
+}
+
+void D3DClass::DefualtState()
+{
+	m_Devcon->RSSetState(NULL);
+}
+
+void D3DClass::WireFrameState()
+{
+	m_Devcon->RSSetState(m_rasterState);
 }
 
 bool D3DClass::Intialize()
@@ -85,9 +243,9 @@ bool D3DClass::Intialize()
 	scd.BufferDesc.Height = (float)W_HEIGHT;
 	scd.BufferDesc.Width = (float)W_WITDH;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scd.BufferUsage = DXGI_USAGE_UNORDERED_ACCESS;
 	scd.OutputWindow = m_handle;
-	scd.SampleDesc.Count = 4; // AA times 4
+	scd.SampleDesc.Count = 1; // AA times 4
 	scd.SampleDesc.Quality = 0;
 	scd.Windowed = TRUE;
 	scd.BufferDesc.RefreshRate.Numerator = 0; // change 0 to numerator for vsync
@@ -121,14 +279,14 @@ bool D3DClass::Intialize()
 		return false;
 	}
 
-	hr = m_Device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView);
+	hr = m_Device->CreateUnorderedAccessView(backBufferPtr, NULL, &m_backBuffer);
 	if (FAILED(hr))
 	{
-		MessageBox(NULL, L"Failed to create rendertargetview", L"Taking orders of whobat?", MB_OK);
+		MessageBox(NULL, L"Failed to create backbuffer", L"Taking orders of a whobat?", MB_OK);
 		return false;
 	}
 	backBufferPtr->Release();
-	backBufferPtr = 0; // Set it to null
+	backBufferPtr = 0;
 
 
 	// z-buffer setup
@@ -138,7 +296,7 @@ bool D3DClass::Intialize()
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.SampleDesc.Count = 4;
+	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
@@ -190,15 +348,13 @@ bool D3DClass::Intialize()
 	if (FAILED(hr))
 		MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
 
-	m_Devcon->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView); // Disabled z buffer for now m_depthStencilView
-
 	 //Configure rasterizer
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
 	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
@@ -213,7 +369,7 @@ bool D3DClass::Intialize()
 	}
 
 	// set it
-	m_Devcon->RSSetState(m_rasterState);
+	m_Devcon->RSSetState(NULL);
 
 	// Configure viewport
 	D3D11_VIEWPORT viewport;
@@ -230,67 +386,13 @@ bool D3DClass::Intialize()
 
 	float fieldOfView = 3.141592654f / 4.0f;
 	float screenAspect = (float)W_WITDH / (float)W_HEIGHT;
-	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 20.0f);
+	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 2000.0f);
 	m_worldMatrix = DirectX::XMMatrixIdentity();
 	m_orthoMatrix = DirectX::XMMatrixOrthographicLH(W_WITDH, W_HEIGHT, 0.5f, 20.0f);
-}
 
-void D3DClass::Clean3D()
-{
-	if (m_swapChain)
-	{
-		m_swapChain->SetFullscreenState(false, NULL);
-	}
-
-	if (m_rasterState)
-	{
-		m_rasterState->Release();
-		m_rasterState = 0;
-	}
-
-	if (m_depthStencilView)
-	{
-		m_depthStencilView->Release();
-		m_depthStencilView = 0;
-	}
-
-	if (m_depthStencilState)
-	{
-		m_depthStencilState->Release();
-		m_depthStencilState = 0;
-	}
-
-	if(m_depthStencilBuffer)
-	{
-		m_depthStencilBuffer->Release();
-		m_depthStencilBuffer = 0;
-	}
-
-	if (m_renderTargetView)
-	{
-		m_renderTargetView->Release();
-		m_renderTargetView = 0;
-	}
-
-	if (m_Devcon)
-	{
-		m_Devcon->Release();
-		m_Devcon = 0;
-	}
-
-	if (m_Device)
-	{
-		m_Device->Release();
-		m_Device = 0;
-	}
-
-	if (m_swapChain)
-	{
-		m_swapChain->Release();
-		m_swapChain = 0;
-	}
 
 }
+
 
 D3DClass::~D3DClass()
 {
@@ -307,7 +409,16 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	color[3] = a;
 
 	// Clear the back buffer
-	 m_Devcon->ClearRenderTargetView(m_renderTargetView, color);
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		m_Devcon->ClearRenderTargetView(m_renderTargetViews[i], color);
+	}
+	color[0] = 0;
+	color[1] = 0;
+	color[2] = 0;
+	color[3] = 0;
+
+	m_Devcon->ClearUnorderedAccessViewFloat(m_backBuffer, color);
 
 	// Clear the depth buffer
 	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -348,10 +459,37 @@ void D3DClass::ShutDown()
 		m_depthStencilBuffer = 0;
 	}
 
-	if (m_renderTargetView)
+	if (m_renderTargetViews)
 	{
-		m_renderTargetView->Release();
-		m_renderTargetView = 0;
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_renderTargetViews[i]->Release();
+			m_renderTargetViews[i] = nullptr;
+		}
+	}
+
+	if (m_shaderResourceViews)
+	{
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_shaderResourceViews[i]->Release();
+			m_shaderResourceViews[i] = 0;
+		}
+	}
+
+	if (m_renderTargetTextures)
+	{
+		for (int i = 0; i < BUFFER_COUNT; i++)
+		{
+			m_renderTargetTextures[i]->Release();
+			m_renderTargetTextures[i] = 0;
+		}
+	}
+
+	if (m_blendState)
+	{
+		m_blendState->Release();
+		m_blendState = 0;
 	}
 
 	if (m_Devcon)
@@ -372,7 +510,11 @@ void D3DClass::ShutDown()
 		m_swapChain = 0;
 	}
 
-	return;
+	if (m_backBuffer)
+	{
+		m_backBuffer->Release();
+		m_backBuffer = 0;
+	}
 }
 
 void D3DClass::PresentScene()
