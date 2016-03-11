@@ -23,9 +23,9 @@ public:
 	{
 		float x, y, z;
 		float tu, tv;
+		float nx, ny, nz;
 		float tx, ty, tz;
 		float bx, by, bz;
-		float nx, ny, nz;
 	};
 
 	struct Vector
@@ -37,6 +37,7 @@ public:
 	~TerrainClass();
 	void Initalize(ID3D11Device* dev, std::string setupFilename);
 	ID3D11ShaderResourceView* GetTexture() { return m_texture; };
+	ID3D11ShaderResourceView* GetNormal() { return m_normalMap; };
 	void Render(ID3D11DeviceContext* devcon);
 	void Shutdown();
 	int GetIndexCount() { return m_indexCount; }
@@ -59,7 +60,7 @@ private:
 	std::string m_terrainFileName;
 	std::wstring m_terrainTexture, m_terrainNormalMap;
 	HeightMapType* m_heightMap;
-	ID3D11ShaderResourceView* m_texture;
+	ID3D11ShaderResourceView* m_texture, * m_normalMap;
 	ID3D11Buffer*  m_vertexBuffer, *m_indexBuffer;
 	ModelType* m_terrainModel;
 };

@@ -4,6 +4,8 @@ struct PixelInput
 	float2 tex : TEXCOORD;
 	float3 normal : NORMALWS;
 	float3 positionWS : POSITIONWS;
+	float3 tangent : TANGETWS;
+	float3 binormal : BINORMALWS;
 };
 
 struct PixelOut
@@ -15,14 +17,20 @@ struct PixelOut
 };
 
 Texture2D Texture : register(t0);
+Texture2D NormalMap : register(t1);
 SamplerState ss : register(s0);
 
 PixelOut PS_main(PixelInput input) : SV_TARGET
 {
 	PixelOut output;
+
+	float4 bumpMap = NormalMap.Sample(ss, input.tex);
+	float4 bumpNormal = normalize(float4(bumpMap.x * input.tangent + bumpMap.y * input.binormal + bumpMap.z*input.normal, 0.0f));
+
 	output.position = float4(input.positionWS, 1.0f);
 	output.diffuse = Texture.Sample(ss, input.tex);
-	output.normal = normalize(float4(input.normal, 0.0f));
+	output.normal = bumpNormal;
 	output.specular = float4(0.3f, 0.3f, 0.3f, 0.0f);
+
 	return output;
 }

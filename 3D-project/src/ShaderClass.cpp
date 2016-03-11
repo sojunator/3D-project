@@ -30,7 +30,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	ID3D10Blob* vertexShaderBuffer;
 	if (vsFilename != NULL)
 	{
-		hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", 0, 0, &vertexShaderBuffer, &errorMsg);
+		hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", D3DCOMPILE_DEBUG, 0, &vertexShaderBuffer, &errorMsg);
 		if (FAILED(hr))
 		{
 			if (errorMsg)
@@ -86,7 +86,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 
 		if (m_shaderType == TERRAIN)
 		{
-			D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+			D3D11_INPUT_ELEMENT_DESC polygonLayout[5];
 			polygonLayout[0].SemanticName = "SV_POSITION";
 			polygonLayout[0].SemanticIndex = 0;
 			polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -111,6 +111,22 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 			polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			polygonLayout[2].InstanceDataStepRate = 0;
 
+			polygonLayout[3].SemanticName = "TANGENT";
+			polygonLayout[3].SemanticIndex = 0;
+			polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			polygonLayout[3].InputSlot = 0;
+			polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[3].InstanceDataStepRate = 0;
+
+			polygonLayout[4].SemanticName = "BINORMAL";
+			polygonLayout[4].SemanticIndex = 0;
+			polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			polygonLayout[4].InputSlot = 0;
+			polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			polygonLayout[4].InstanceDataStepRate = 0;
+
 			int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 			hr = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
 			if (FAILED(hr))
@@ -125,7 +141,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	ID3D10Blob* pixelShaderBuffer;
 	if (psFilename != NULL)
 	{
-		hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", 0, 0, &pixelShaderBuffer, &errorMsg);
+		hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", D3DCOMPILE_DEBUG, 0, &pixelShaderBuffer, &errorMsg);
 		if (FAILED(hr))
 		{
 			if (errorMsg)
@@ -270,7 +286,7 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMsg, HWND hwnd, WCHA
 	//errorMsg->Release();
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture)
+bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -294,8 +310,17 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX
 	devcon->Unmap(m_matrixBuffer, 0);
 
 	bufferNumber = 0;
+	if (normalMap != NULL)
+	{
+		ID3D11ShaderResourceView* textures[2] = { texture, normalMap };
+		devcon->PSSetShaderResources(0, 2, textures);
+	}
+	else
+	{
+		devcon->PSSetShaderResources(0, 1, &texture);
+	}
 	devcon->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-	devcon->PSSetShaderResources(0, 1, &texture);
+
 
 	return true;
 }
@@ -321,11 +346,11 @@ ShaderClass::~ShaderClass()
 
 }
 
-bool ShaderClass::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture)
+bool ShaderClass::Render(ID3D11DeviceContext* devcon, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap)
 {
 	bool result;
 
-	result = SetShaderParameters(devcon, world, view, projection, texture);
+	result = SetShaderParameters(devcon, world, view, projection, texture, normalMap);
 	if (!result)
 		MessageBox(NULL, L"Failed to set shader params", L"Shit son", MB_OK);
 

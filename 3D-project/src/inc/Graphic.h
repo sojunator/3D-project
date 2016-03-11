@@ -37,7 +37,6 @@ private:
 	ShaderClass* m_TerrainShader;
 	ShaderClass* m_Shader;
 	DeferredShader* m_ShaderLight;
-	DeferredShader* m_ShaderNormal;
 	ComputeShader* m_GuassianShader;
 	ComputeShader* m_passThrough;
 

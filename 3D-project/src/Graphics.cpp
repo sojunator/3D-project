@@ -35,15 +35,13 @@ Graphics::Graphics(HWND handle)
 	// Create all of our shaders
 	m_TerrainShader = new ShaderClass(ShaderClass::TERRAIN);
 	m_Shader = new ShaderClass(ShaderClass::OBJ);
-	m_ShaderLight = new DeferredShader(DeferredShader::NONORMAL);
-	m_ShaderNormal = new DeferredShader(DeferredShader::NORMAL);
+	m_ShaderLight = new DeferredShader();
 	m_GuassianShader = new ComputeShader;
 	m_passThrough = new ComputeShader;
 
 	// Initialize all of our shaders
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_TerrainShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_terrain_VertexShader.hlsl", L"../3D-project/src/hlsl/1_terrain_PixelShader.hlsl", NULL);
-	//m_ShaderNormal->Initialize(m_DirectX->GetDevice(), handle, L"", L"");
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
 	m_GuassianShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_GaussianCompute.hlsl");
 	m_passThrough->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_passThroughCompute.hlsl");
@@ -101,11 +99,11 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 
 	m_map->Render(m_DirectX->GetDeviceContext());
-	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_map->GetTexture());
+	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_map->GetTexture(), m_map->GetNormal());
 
 
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
 
 
 
@@ -142,12 +140,6 @@ void Graphics::Shutdown()
 		m_TerrainShader = 0;
 	}
 
-	if (m_ShaderNormal)
-	{
-		m_ShaderNormal->ShutDown();
-		delete m_ShaderNormal;
-		m_ShaderNormal = 0;
-	}
 
 	if (m_GuassianShader)
 	{

@@ -9,7 +9,7 @@ public:
 	enum ShaderType { TERRAIN, OBJ };
 	ShaderClass(ShaderType shader);
 	bool Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename, WCHAR* gsFilename);
-	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture);
+	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap);
 	void ShutDown();
 	~ShaderClass();
 private:
@@ -29,7 +29,7 @@ private:
 	bool InitializeShader(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename, WCHAR* gsFilename);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob* blob, HWND errorString, WCHAR* dno);
-	bool SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture);
+	bool SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalMap);
 	void RenderShader(ID3D11DeviceContext* devcon, int indexCount);
 
 };

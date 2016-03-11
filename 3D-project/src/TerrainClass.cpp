@@ -12,6 +12,8 @@ TerrainClass::TerrainClass()
 	m_vertexBuffer = 0;
 	m_heightMap = 0;
 	m_terrainModel = 0;
+	m_texture = 0;
+	m_normalMap = 0;
 }
 
 void TerrainClass::Render(ID3D11DeviceContext* devcon)
@@ -72,6 +74,12 @@ void TerrainClass::Shutdown()
 	{
 		m_texture->Release();
 		m_texture = 0;
+	}
+
+	if (m_normalMap)
+	{
+		m_normalMap->Release();
+		m_normalMap = 0;
 	}
 
 	ShutdownHeightMap();
@@ -148,23 +156,23 @@ void TerrainClass::CalculateTerrainVectors()
 void TerrainClass::CalculateTangentBinormal(verts vertex1, verts vertex2, verts vertex3, Vector& tangent, Vector& binormal)
 {
 	float vector1[3], vector2[3];
-	float tuVector[2], tvVector[3];
+	float tuVector[2], tvVector[2];
 	float den;
 	float len;
 
-	vector1[0] = vertex1.position.x - vertex2.position.x;
-	vector1[1] = vertex1.position.y - vertex2.position.y;
-	vector1[2] = vertex1.position.z - vertex2.position.z;
+	vector1[0] = vertex2.position.x - vertex1.position.x;
+	vector1[1] = vertex2.position.y - vertex1.position.y;
+	vector1[2] = vertex2.position.z - vertex1.position.z;
 
-	vector2[0] = vertex1.position.x - vertex3.position.x;
-	vector2[1] = vertex1.position.y - vertex3.position.y;
-	vector2[2] = vertex1.position.z - vertex3.position.z;
+	vector2[0] = vertex3.position.x - vertex1.position.x;
+	vector2[1] = vertex3.position.y - vertex1.position.y;
+	vector2[2] = vertex3.position.z - vertex1.position.z;
 
-	tuVector[0] = vertex1.texture.x - vertex2.texture.x;
-	tuVector[1] = vertex1.texture.y - vertex2.texture.y;
+	tuVector[0] = vertex2.texture.x - vertex1.texture.x;
+	tuVector[1] = vertex3.texture.x - vertex1.texture.x;
 
-	tvVector[0] = vertex3.texture.x - vertex2.texture.x;
-	tuVector[1] = vertex3.texture.y - vertex2.texture.y;
+	tvVector[0] = vertex2.texture.y - vertex1.texture.y;
+	tvVector[1] = vertex3.texture.y - vertex1.texture.y;
 
 	// calculate the invers matrix for uv
 	den = 1.0f / (tuVector[0]*tvVector[1] - tuVector[1]*tvVector[0]);
@@ -591,6 +599,13 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Failed to load texture for heightmap", L"Fatal error", MB_OK);
+	}
+
+	fuckasci = const_cast<wchar_t*> (m_terrainNormalMap.c_str());
+	hr = DirectX::CreateWICTextureFromFile(device, NULL, fuckasci, NULL, &m_normalMap, 0);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to load normalMap", L"Fatal error", MB_OK);
 	}
 
 
