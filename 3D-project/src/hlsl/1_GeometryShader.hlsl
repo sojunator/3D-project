@@ -10,10 +10,11 @@ struct GeometryInput
 
 struct PixelInput
 {
-	float4 PositionCS : SV_Position;
+	float4 PositionNDCS : SV_Position;
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
 	float3 PositionWS : POSITIONWS;
+	float4 PositionCS : POSITIONCS;
 };
 
 [maxvertexcount(3)]
@@ -24,10 +25,11 @@ void GS_main(triangle GeometryInput input[3], inout TriangleStream< PixelInput >
 		for (uint i = 0; i < 3; i++)
 		{
 			PixelInput element;
-			element.PositionCS = input[i].PositionCS;
+			element.PositionNDCS = input[i].PositionCS;
 			element.Tex = input[i].Tex;
 			element.PositionWS = input[i].PositionWS;
 			element.NormalWS = input[i].NormalWS;
+			element.PositionCS = input[i].PositionCS;
 			output.Append(element);
 		}
 	}

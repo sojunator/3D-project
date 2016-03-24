@@ -16,7 +16,7 @@
 #include "ComputeShader.h"
 #include "TerrainClass.h"
 
-#define AMOUNT_OF_LIGHTS 10
+#define AMOUNT_OF_LIGHTS 3
 
 class Graphics
 {

@@ -2,6 +2,7 @@ Texture2D NormalTexture		: register(t0);
 Texture2D DiffuseTexture	: register(t1);
 Texture2D SpecularTexture	: register(t2);
 Texture2D PositionTexture	: register(t3);
+Texture2D DepthTexture		: register(t4);
 
 SamplerState ss : register(s0);
 
@@ -46,5 +47,5 @@ float3 PS_main(PixelInput input) : SV_Target0
 	float spec = pow(reflection, 16);
 	float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
 
-	return color * (ambient + diffuse) + float4(specularValue, 1.0f);
+	return color;// *(ambient + diffuse) + float4(specularValue, 1.0f);
 }
