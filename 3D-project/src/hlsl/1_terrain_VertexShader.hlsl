@@ -13,6 +13,7 @@ struct PixelInput
 	float3 positionWS : POSITIONWS;
 	float3 tangent : TANGETWS;
 	float3 binormal : BINORMALWS;
+	float4 positionHCS : TEXTURE0;
 };
 
 struct VertexInput
@@ -34,6 +35,8 @@ PixelInput VS_main(VertexInput input)
 	output.positionWS = output.position;
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
+
+	output.positionHCS = output.position;
 
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
 	output.binormal = normalize(mul(input.binormal, (float3x3)worldMatrix));

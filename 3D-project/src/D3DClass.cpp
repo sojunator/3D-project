@@ -39,7 +39,7 @@ void D3DClass::CreateRenderTargetViews()
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // first pass its a rt, second ints a shader resource
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // first pass its a rt, second its a shader resource
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
@@ -49,7 +49,7 @@ void D3DClass::CreateRenderTargetViews()
 		if (FAILED(hr))
 		{
 			MessageBox(NULL, L"Failed to create rendertarget textures, exiting", L"Fatal error", MB_OK);
-			return;
+
 		}
 	}
 
@@ -64,7 +64,6 @@ void D3DClass::CreateRenderTargetViews()
 	 if (FAILED(hr))
 	 {
 		 MessageBox(NULL, L"Faled to create render target views", L"Fatal error", MB_OK);
-		 return;
 	 }
 	}
 
@@ -73,13 +72,13 @@ void D3DClass::CreateRenderTargetViews()
 	shrvd.Texture2D.MostDetailedMip = 0;
 	shrvd.Texture2D.MipLevels = 1;
 
+	// create all the shader resources views
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		hr = m_Device->CreateShaderResourceView(m_renderTargetTextures[i], &shrvd, &m_shaderResourceViews[i]);
 		if (FAILED(hr))
 		{
 			MessageBox(NULL, L"Failed to create shaderresource", L"Fatal error", MB_OK);
-			return;
 		}
 	}
 }
@@ -112,7 +111,7 @@ void D3DClass::SetRenderTargetViews()
 	ID3D11ShaderResourceView* shvs[BUFFER_COUNT] = { 0, 0, 0, 0, 0 };
 	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shvs);
 	m_Devcon->PSSetShaderResources(0, BUFFER_COUNT, shvs);
-	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView);
+	m_Devcon->OMSetRenderTargets(5, m_renderTargetViews, m_depthStencilView);
 }
 
 void D3DClass::PreparePostPass()
@@ -122,7 +121,7 @@ void D3DClass::PreparePostPass()
 	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
 
 	// Bind the shader resource for the compute shader
-	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[4], 0, 0, 0, 0 };
+	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[5], 0, 0, 0, 0 };
 	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shrsv);
 
 	// Bind the UAV for input
@@ -146,14 +145,14 @@ void D3DClass::PrePareGeoPass()
 
 void D3DClass::SetBackBuffer()
 {
-	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[4], 0, 0, 0 };
+	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[5], 0, 0, 0 };
 	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
 
 }
 
 void D3DClass::SetShaderResourceViews()
 {
-	m_Devcon->PSSetShaderResources(0, 4, m_shaderResourceViews);
+	m_Devcon->PSSetShaderResources(0, 5, m_shaderResourceViews);
 }
 
 void D3DClass::DefualtState()

@@ -7,10 +7,11 @@ cbuffer MaterialInfo : register(b0)
 
 struct PixelInput
 {
-	float4 PositionCS : SV_Position;
+	float4 PositionNDCS: SV_Position;
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
 	float3 Position : POSITIONWS;
+	float4 PositionCS : POSITIONCS;
 };
 
 struct PixelOut
@@ -19,6 +20,7 @@ struct PixelOut
 	float4 diffuse : SV_Target1;
 	float4 specular : SV_Target2;
 	float4 position : SV_Target3;
+	float4 depth : SV_Target4;
 };
 
 Texture2D Texture : register(t0);
@@ -32,6 +34,10 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
 	output.specular = float4(Ks.xyz, 32);
 	output.position = float4(input.Position, 1.0);
+
+	float depthValue = input.PositionCS.z / input.PositionCS.w;
+
+	output.depth = float4(depthValue, depthValue, depthValue, 1.0f);
 
 	return output;
 }

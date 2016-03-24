@@ -22,7 +22,7 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 	HRESULT hr;
 	ID3DBlob* errorMsg = 0;
 	ID3DBlob* vertexShaderBuffer;
-	hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", 0, 0, &vertexShaderBuffer, &errorMsg);
+	hr = D3DCompileFromFile(vsFilename, NULL, NULL, "VS_main", "vs_4_0", D3DCOMPILE_DEBUG, 0, &vertexShaderBuffer, &errorMsg);
 	if (FAILED(hr))
 	{
 		if (errorMsg)
@@ -37,7 +37,7 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 	}
 
 	ID3DBlob* pixelShaderBuffer;
-	hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", 0, 0, &pixelShaderBuffer, &errorMsg);
+	hr = D3DCompileFromFile(psFilename, NULL, NULL, "PS_main", "ps_4_0", D3DCOMPILE_DEBUG, 0, &pixelShaderBuffer, &errorMsg);
 	if (FAILED(hr))
 	{
 		if (errorMsg)

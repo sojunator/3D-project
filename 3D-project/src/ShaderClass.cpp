@@ -168,7 +168,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFil
 	if (gsFilename != NULL)
 	{
 		
-		hr = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_4_0", 0, 0, &geometryShaderBuffer, &errorMsg);
+		hr = D3DCompileFromFile(gsFilename, NULL, NULL, "GS_main", "gs_4_0", D3DCOMPILE_DEBUG, 0, &geometryShaderBuffer, &errorMsg);
 		if (FAILED(hr))
 		{
 			if (errorMsg)

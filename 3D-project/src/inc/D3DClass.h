@@ -3,7 +3,7 @@
 
 #include "defines.h"
 
-#define BUFFER_COUNT 5
+#define BUFFER_COUNT 6
 
 class D3DClass
 {
