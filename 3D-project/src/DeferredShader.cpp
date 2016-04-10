@@ -8,7 +8,8 @@ DeferredShader::DeferredShader()
 	m_pixelShader = 0;
 	m_layout = 0;
 	m_matrixBuffer = 0;
-	m_sampleState = 0;
+	m_sampleStateClamp = 0;
+	m_sampleStateWrap = 0;
 }
 
 bool DeferredShader::Initialize(ID3D11Device* device, HWND handle, WCHAR* vsFilename, WCHAR* psFilename)
@@ -157,7 +158,17 @@ void DeferredShader::InitializeShader(ID3D11Device* device, HWND handle, WCHAR* 
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	hr = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	hr = device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"Failed to create sampler on gpu", L"Sampler error", MB_OK);
+	}
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+	hr = device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"Failed to create sampler on gpu", L"Sampler error", MB_OK);
@@ -172,10 +183,16 @@ void DeferredShader::ShutDown()
 
 void DeferredShader::ShutdownShader()
 {
-	if (m_sampleState)
+	if (m_sampleStateClamp)
 	{
-		m_sampleState->Release();
-		m_sampleState = 0;
+		m_sampleStateClamp->Release();
+		m_sampleStateClamp = 0;
+	}
+
+	if (m_sampleStateWrap)
+	{
+		m_sampleStateWrap->Release();
+		m_sampleStateWrap = 0;
 	}
 
 	if (m_matrixBuffer)
@@ -217,9 +234,7 @@ void DeferredShader::ShutdownShader()
 
 void DeferredShader::OutputShaderErrorMessage(ID3D10Blob* errorMsg, HWND hwnd, WCHAR* shaderFilename)
 {
-	////OutputDebugStringA(static_cast<char*>(errorMsg->GetBufferPointer()));
 	MessageBox(hwnd, L"Error compiling shader. Check output debug.", shaderFilename, MB_OK);
-	//errorMsg->Release();
 }
 
 void DeferredShader::SetShaderParameters(ID3D11DeviceContext* devcon, const DirectX::XMMATRIX& world, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection)
@@ -258,13 +273,13 @@ void DeferredShader::configureShader(ID3D11DeviceContext* devcon, const DirectX:
 {
 	UINT temp = 12;
 	UINT zero = 0;
+	ID3D11SamplerState* samplerStates[2] = { m_sampleStateClamp, m_sampleStateWrap };
 	SetShaderParameters(devcon, world, view, projection);
 	devcon->IASetInputLayout(m_layout);
 	devcon->VSSetShader(m_vertexShader, NULL, 0);
 	devcon->PSSetShader(m_pixelShader, NULL, 0);
 	devcon->GSSetShader(NULL, NULL, 0);
-
-	devcon->PSSetSamplers(0, 1, &m_sampleState);
+	devcon->PSSetSamplers(0, 2, samplerStates);
 	devcon->IASetVertexBuffers(0, 1, &m_vertexBuffer, &temp, &zero);
 }
 

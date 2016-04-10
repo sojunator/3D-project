@@ -130,10 +130,10 @@ void D3DClass::PreparePostPass()
 
 }
 
-void D3DClass::PrepareLightPass()
+void D3DClass::PrepareLightPass(ID3D11ShaderResourceView* lightShaderResource)
 {
 	SetBackBuffer(); // Draw into the last rendertargetview, which will be used in the post process pass
-	SetShaderResourceViews(); // Make the geo-data avaiable for ps
+	SetShaderResourceViews(lightShaderResource); // Make the geo-data avaiable for ps
 }
 
 void D3DClass::PrePareGeoPass()
@@ -150,9 +150,13 @@ void D3DClass::SetBackBuffer()
 
 }
 
-void D3DClass::SetShaderResourceViews()
+void D3DClass::SetShaderResourceViews(ID3D11ShaderResourceView* lightShaderResource)
 {
-	m_Devcon->PSSetShaderResources(0, 5, m_shaderResourceViews);
+	ID3D11ShaderResourceView* shrvs[6];
+	for (int i = 0; i < 5; i++)
+		shrvs[i] = m_shaderResourceViews[i];
+	shrvs[5] = lightShaderResource;
+	m_Devcon->PSSetShaderResources(0, 6, shrvs);
 }
 
 void D3DClass::DefualtState()

@@ -14,7 +14,7 @@ public:
 	void PresentScene();
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
-	void PrepareLightPass();
+	void PrepareLightPass(ID3D11ShaderResourceView* lightShaderResource);
 	void PreparePostPass();
 	void PrePareGeoPass();
 	void WireFrameState();
@@ -35,7 +35,7 @@ private:
 	int m_videoCardMemory;
 	char m_videoCardDesc[128];
 
-	void SetShaderResourceViews();
+	void SetShaderResourceViews(ID3D11ShaderResourceView* lightShaderResource);
 	void SetBackBuffer();
 
 	void unBindBlendState();
