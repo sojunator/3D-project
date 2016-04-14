@@ -2,8 +2,7 @@ Texture2D NormalTexture		: register(t0);
 Texture2D DiffuseTexture	: register(t1);
 Texture2D SpecularTexture	: register(t2);
 Texture2D PositionTexture	: register(t3);
-Texture2D PositionWSTexture	: register(t4);
-Texture2D DepthLight		: register(t5);
+Texture2D DepthLight		: register(t4);
 
 SamplerState ClampSampler	: register(s0);
 SamplerState WrapSampler	: register(s1);
@@ -47,7 +46,7 @@ float3 PS_main(PixelInput input) : SV_Target0
 	float4 tex = DiffuseTexture.Load(float3(input.Position.xy, 0), 0);
 	float3 normal = NormalTexture.Load(float3(input.Position.xy, 0), 0).xyz;
 	float4 specular = SpecularTexture.Load(float3(input.Position.xy, 0), 0);
-	float4 position = PositionTexture.Load(float3(input.Position.xyz), 0);
+	float4 position = PositionTexture.Load(float3(input.Position.xy, 0), 0);
 	//float4 positionWS = PositionWSTexture.Load(float3(input.Position.xyz), 0);
 
 	float4 lightViewPosition = PositionLightView(position, input.projectionMatrix);

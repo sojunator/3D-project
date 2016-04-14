@@ -152,11 +152,11 @@ void D3DClass::SetBackBuffer()
 
 void D3DClass::SetShaderResourceViews(ID3D11ShaderResourceView* lightShaderResource)
 {
-	ID3D11ShaderResourceView* shrvs[6];
-	for (int i = 0; i < 5; i++)
+	ID3D11ShaderResourceView* shrvs[5];
+	for (int i = 0; i < 4; i++)
 		shrvs[i] = m_shaderResourceViews[i];
-	shrvs[5] = lightShaderResource;
-	m_Devcon->PSSetShaderResources(0, 6, shrvs);
+	shrvs[4] = lightShaderResource;
+	m_Devcon->PSSetShaderResources(0, 5, shrvs);
 }
 
 void D3DClass::DefualtState()

@@ -20,7 +20,6 @@ struct PixelOut
 	float4 diffuse : SV_Target1;
 	float4 specular : SV_Target2;
 	float4 position : SV_Target3;
-	float4 positionWS : SV_Target4;
 };
 
 Texture2D Texture : register(t0);
@@ -36,7 +35,6 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
 	output.specular = float4(Ks.xyz, 32);
 	output.position = float4(input.Position, depthValue);
-	output.positionWS = float4(input.Position, 1.0f);
 
 	return output;
 }
