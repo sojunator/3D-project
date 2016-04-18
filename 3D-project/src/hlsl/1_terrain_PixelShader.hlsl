@@ -31,7 +31,7 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 
 	float depthValue = input.positionHCS.z / input.positionHCS.w;
 
-	output.position = float4(input.positionWS, 1.0f);
+	output.position = float4(input.positionWS, depthValue);
 	output.diffuse = Texture.Sample(ss, input.tex);
 	output.normal = bumpNormal;
 	output.specular = float4(0.3f, 0.3f, 0.3f, 0.0f);

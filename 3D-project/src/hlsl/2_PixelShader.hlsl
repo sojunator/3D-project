@@ -29,33 +29,36 @@ struct PixelInput
 
 float4 PositionLightView(float4 position, matrix projectionMatrix)
 {
-	float4 returnPosition = float4(position.xyz, 1.0f);
-	returnPosition = mul(returnPosition, m_lightView);
+	float4 returnPosition;
+	returnPosition = mul(position, m_lightView);
 	returnPosition = mul(returnPosition, projectionMatrix);
 	return returnPosition;
 }
 
-float3 PS_main(PixelInput input) : SV_Target0
+float4 PS_main(PixelInput input) : SV_Target0
 {
 	PixelOut output;
-	float bias = 0.001f;
-	
+	float bias = 0.00001f;
+
 	float4 ambient = m_ambientStrenght * m_lightColour;
-	float color = ambient;
 
 	float4 tex = DiffuseTexture.Load(float3(input.Position.xy, 0), 0);
 	float3 normal = NormalTexture.Load(float3(input.Position.xy, 0), 0).xyz;
 	float4 specular = SpecularTexture.Load(float3(input.Position.xy, 0), 0);
 	float4 position = PositionTexture.Load(float3(input.Position.xy, 0), 0);
-	//float4 positionWS = PositionWSTexture.Load(float3(input.Position.xyz), 0);
 
 	float4 lightViewPosition = PositionLightView(position, input.projectionMatrix);
 	float2 projectTexCoord;
 
-	projectTexCoord.x = lightViewPosition.x / lightViewPosition.w / 2.0f + 0.5f;
-	projectTexCoord.y = lightViewPosition.y / lightViewPosition.w / 2.0f + 0.5f;
+	projectTexCoord.x = lightViewPosition.x / lightViewPosition.w;
+	projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w;
 
-	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+	projectTexCoord.x = (projectTexCoord.x * 0.5) + 0.5f;
+	projectTexCoord.y = (projectTexCoord.y * 0.5) + 0.5f;
+
+	//return float4(projectTexCoord.x, projectTexCoord.y, 0.0f, 1.0f);
+
+
 	{
 		float depthValue = PositionTexture.Sample(ClampSampler, projectTexCoord).w;
 		float lightDepthValue = DepthLight.Sample(ClampSampler, projectTexCoord).r;
@@ -77,7 +80,9 @@ float3 PS_main(PixelInput input) : SV_Target0
 
 			return tex * (ambient + diffuse) + float4(specularValue, 1.0f);
 		}
+		else
+			return tex; //* ambient;
 	}
 
-	return tex * ambient;
+
 }

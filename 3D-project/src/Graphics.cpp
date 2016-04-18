@@ -22,7 +22,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera = new CameraClass;
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f));
+	m_Camera->SetPosition(DirectX::XMFLOAT3(10.0f, 4.5f, 2.25f));
 
 	// Create the model object.
 	m_Model = new Model(m_DirectX->GetDevice());
@@ -34,8 +34,9 @@ Graphics::Graphics(HWND handle)
 
 	// Create all of our shaders
 	m_TerrainShader = new ShaderClass(ShaderClass::TERRAIN);
+	m_depthShaderTER = new ShaderClass(ShaderClass::TERRAIN);
 	m_Shader = new ShaderClass(ShaderClass::OBJ);
-	m_depthShader = new ShaderClass(ShaderClass::OBJ);
+	m_depthShaderOBJ = new ShaderClass(ShaderClass::OBJ);
 	m_ShaderLight = new DeferredShader();
 	m_GuassianShader = new ComputeShader;
 	m_passThrough = new ComputeShader;
@@ -44,7 +45,8 @@ Graphics::Graphics(HWND handle)
 	m_Shader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_VertexShader.hlsl", L"../3D-project/src/hlsl/1_PixelShader.hlsl", L"../3D-project/src/hlsl/1_GeometryShader.hlsl");
 	m_TerrainShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_terrain_VertexShader.hlsl", L"../3D-project/src/hlsl/1_terrain_PixelShader.hlsl", NULL);
 	m_ShaderLight->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/2_VertexShader.hlsl", L"../3D-project/src/hlsl/2_PixelShader.hlsl");
-	m_depthShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_depth_VertexShader.hlsl", L"../3D-project/src/hlsl/1_depth_PixelShader.hlsl", NULL);
+	m_depthShaderOBJ->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_depth_VertexShader.hlsl", L"../3D-project/src/hlsl/1_depth_PixelShader.hlsl", NULL);
+	m_depthShaderTER->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_depth_VertexShader.hlsl", L"../3D-project/src/hlsl/1_depth_PixelShader.hlsl", NULL);
 	m_GuassianShader->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_GaussianCompute.hlsl");
 	m_passThrough->Initialize(m_DirectX->GetDevice(), handle, L"../3D-project/src/hlsl/1_passThroughCompute.hlsl");
 
@@ -53,8 +55,9 @@ Graphics::Graphics(HWND handle)
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
 		DirectX::XMFLOAT3 lightDir = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(rand()% 4, rand() % 3, rand() % 4);
-		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), 1.0f);
+		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(10.0f, 8.5f, 2.25f);
+		//DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), 1.0f);
+		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 0.f, 0.f, 0.f);
 		float ambientStrenght = 0.1f / AMOUNT_OF_LIGHTS;
 		Light tempLight = Light(lightPos, lightDir, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice(), m_DirectX->GetDeviceContext());
 		tempLight.CreateConstantBuffer();
@@ -70,7 +73,8 @@ void Graphics::Update(float dt)
 
 void Graphics::Render(float dt, bool* keys, POINT mousePos)
 {
-	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translate;
+	translate = DirectX::XMMatrixTranslation(3.0f, 2.0, 2.0);
 
 	m_Camera->HandleKeyInput(keys, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
@@ -100,20 +104,26 @@ void Graphics::Render(float dt, bool* keys, POINT mousePos)
 	}
 
 
+	// First pass, render all geometry
 	m_map->Render(m_DirectX->GetDeviceContext());
 	m_TerrainShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_map->GetTexture(), m_map->GetNormal());
 
-
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
 
 	// Second pass, render from lights perspective
 	m_DirectX->DefualtState();
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
-		m_Model->Render(m_DirectX->GetDeviceContext());
 		m_lights[i].BindRtv();
-		m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, m_lights[i].GetViewMatrix(), projectionMatrix, m_Model->GetTexture(), NULL);
+
+		m_map->Render(m_DirectX->GetDeviceContext());
+		m_depthShaderTER->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, m_lights[i].GetViewMatrix(), projectionMatrix, m_map->GetTexture(), NULL);
+
+		m_Model->Render(m_DirectX->GetDeviceContext());
+		m_depthShaderOBJ->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, m_lights[i].GetViewMatrix(), projectionMatrix, m_Model->GetTexture(), NULL);
+
+
 	}
 
 
@@ -140,11 +150,18 @@ void Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 void Graphics::Shutdown()
 {
-	if (m_depthShader)
+	if (m_depthShaderOBJ)
 	{
-		m_depthShader->ShutDown();
-		delete m_depthShader;
-		m_depthShader = 0;
+		m_depthShaderOBJ->ShutDown();
+		delete m_depthShaderOBJ;
+		m_depthShaderOBJ = 0;
+	}
+
+	if (m_depthShaderTER)
+	{
+		m_depthShaderTER->ShutDown();
+		delete m_depthShaderTER;
+		m_depthShaderTER = 0;
 	}
 
 	if (m_TerrainShader)
