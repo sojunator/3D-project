@@ -13,9 +13,18 @@ Light::Light(DirectX::XMFLOAT3 lightPos, DirectX::XMFLOAT3 lightDir, DirectX::XM
 	m_devcon = devcon;
 
 	GenerateViewMatrix();
+	GenerateProjectionMatrix();
 	CreateDepthTexture();
 
 
+
+}
+
+void Light::GenerateProjectionMatrix()
+{
+	float fieldOfView = 3.141592654f / 4.0f;
+	float screenAspect = (float)W_WITDH / (float)W_HEIGHT;
+	m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 2000.0f);
 }
 
 void Light::GenerateViewMatrix()
@@ -114,6 +123,7 @@ void Light::CreateConstantBuffer()
 	cbData.m_ambientStrenght = m_ambientStrenght;
 	cbData.m_cameraPos = m_cameraPos;
 	cbData.m_lightView = m_lightView;
+	cbData.m_projection = m_projectionMatrix;
 
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(cbData);

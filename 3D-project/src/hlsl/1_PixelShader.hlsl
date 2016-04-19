@@ -33,8 +33,8 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 
 	output.normal = normalize(float4(input.NormalWS, 0.0));
 	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
-	output.specular = float4(Ks.xyz, 32);
-	output.position = float4(input.PositionWS, depthValue);
+	output.specular = float4(Ks.xy, depthValue, 32);
+	output.position = float4(input.PositionWS, 1.0f);
 
 	return output;
 }

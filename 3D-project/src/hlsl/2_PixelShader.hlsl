@@ -14,6 +14,7 @@ cbuffer LightInfo : register(b0)
 	float4 m_lightColour;
 	float4 m_cameraPos;
 	matrix m_lightView;
+	matrix m_projection;
 }
 
 struct PixelOut
@@ -24,21 +25,12 @@ struct PixelOut
 struct PixelInput
 {
 	float4 Position : SV_Position;
-	matrix projectionMatrix : PROJECTIONM;
 };
 
-float4 PositionLightView(float4 position, matrix projectionMatrix)
-{
-	float4 returnPosition;
-	returnPosition = mul(position, m_lightView);
-	returnPosition = mul(returnPosition, projectionMatrix);
-	return returnPosition;
-}
-
-float4 PS_main(PixelInput input) : SV_Target0
+float2 PS_main(PixelInput input) : SV_Target0
 {
 	PixelOut output;
-	float bias = 0.00001f;
+	float bias = 0.001f;
 
 	float4 ambient = m_ambientStrenght * m_lightColour;
 
@@ -47,7 +39,9 @@ float4 PS_main(PixelInput input) : SV_Target0
 	float4 specular = SpecularTexture.Load(float3(input.Position.xy, 0), 0);
 	float4 position = PositionTexture.Load(float3(input.Position.xy, 0), 0);
 
-	float4 lightViewPosition = PositionLightView(position, input.projectionMatrix);
+	float4 lightViewPosition = mul(position, m_lightView);
+	lightViewPosition = mul(lightViewPosition, m_projection);
+
 	float2 projectTexCoord;
 
 	projectTexCoord.x = lightViewPosition.x / lightViewPosition.w;
@@ -56,11 +50,10 @@ float4 PS_main(PixelInput input) : SV_Target0
 	projectTexCoord.x = (projectTexCoord.x * 0.5) + 0.5f;
 	projectTexCoord.y = (projectTexCoord.y * 0.5) + 0.5f;
 
-	//return float4(projectTexCoord.x, projectTexCoord.y, 0.0f, 1.0f);
-
+	return projectTexCoord;
 
 	{
-		float depthValue = PositionTexture.Sample(ClampSampler, projectTexCoord).w;
+		float depthValue = SpecularTexture.Sample(ClampSampler, projectTexCoord).w;
 		float lightDepthValue = DepthLight.Sample(ClampSampler, projectTexCoord).r;
 		depthValue -= bias;
 
@@ -81,7 +74,7 @@ float4 PS_main(PixelInput input) : SV_Target0
 			return tex * (ambient + diffuse) + float4(specularValue, 1.0f);
 		}
 		else
-			return tex; //* ambient;
+			return tex * ambient;
 	}
 
 

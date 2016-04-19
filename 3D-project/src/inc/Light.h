@@ -29,10 +29,12 @@ private:
 		DirectX::XMFLOAT4 m_cameraPos;
 		DirectX::XMFLOAT4 m_lightDirection;
 		DirectX::XMMATRIX m_lightView;
+		DirectX::XMMATRIX m_projection;
 	};
 
 	void GenerateViewMatrix();
 	void CreateDepthTexture();
+	void GenerateProjectionMatrix();
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_devcon;
@@ -42,6 +44,7 @@ private:
 	DirectX::XMFLOAT4 m_lightColour;
 	DirectX::XMFLOAT4 m_cameraPos;
 	DirectX::XMMATRIX m_lightView;
+	DirectX::XMMATRIX m_projectionMatrix;
 	ID3D11Texture2D* m_renderTargetTexture;
 	ID3D11RenderTargetView* m_renderTargetView;
 	ID3D11ShaderResourceView* m_shaderResourceView;

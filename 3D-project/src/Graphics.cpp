@@ -55,7 +55,7 @@ Graphics::Graphics(HWND handle)
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
 		DirectX::XMFLOAT3 lightDir = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(10.0f, 8.5f, 2.25f);
+		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(10.0f, 8.5f, 0.25f);
 		//DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), static_cast <float> (rand()) / static_cast <float> (RAND_MAX), 1.0f);
 		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 0.f, 0.f, 0.f);
 		float ambientStrenght = 0.1f / AMOUNT_OF_LIGHTS;

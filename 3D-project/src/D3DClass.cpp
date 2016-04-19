@@ -257,7 +257,7 @@ bool D3DClass::Intialize()
 	hr = D3D11CreateDeviceAndSwapChain(NULL, // adapter
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		NULL,
+		D3D11_CREATE_DEVICE_DEBUG,
 		NULL,
 		NULL,
 		D3D11_SDK_VERSION,
