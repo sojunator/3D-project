@@ -3,7 +3,7 @@ struct GeometryInput
 	float4 PositionCS : SV_Position;
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
-	float3 PositionWS : POSITIONWS;
+	float4 PositionWS : POSITIONWS;
 	float3 PositionVS : POSITIONVS;
 	float3 NormalVS : NORMALVS;
 };
@@ -13,7 +13,7 @@ struct PixelInput
 	float4 PositionNDCS : SV_Position;
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
-	float3 PositionWS : POSITIONWS;
+	float4 PositionWS : POSITIONWS;
 	float4 PositionCS : POSITIONCS;
 };
 

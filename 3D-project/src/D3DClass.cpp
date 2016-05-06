@@ -108,10 +108,10 @@ void D3DClass::SetBlendState()
 
 void D3DClass::SetRenderTargetViews()
 {
-	ID3D11ShaderResourceView* shvs[BUFFER_COUNT] = { 0, 0, 0, 0, 0 };
-	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shvs);
-	m_Devcon->PSSetShaderResources(0, BUFFER_COUNT, shvs);
-	m_Devcon->OMSetRenderTargets(5, m_renderTargetViews, m_depthStencilView);
+	ID3D11ShaderResourceView* shvs[BUFFER_COUNT + 1] = { 0, 0, 0, 0, 0, 0 };
+	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT + 1 , shvs);
+	m_Devcon->PSSetShaderResources(0, BUFFER_COUNT + 1, shvs);
+	m_Devcon->OMSetRenderTargets(4, m_renderTargetViews, m_depthStencilView[0]);
 }
 
 void D3DClass::PreparePostPass()
@@ -121,7 +121,7 @@ void D3DClass::PreparePostPass()
 	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
 
 	// Bind the shader resource for the compute shader
-	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[5], 0, 0, 0, 0 };
+	ID3D11ShaderResourceView* shrsv[BUFFER_COUNT] = { m_shaderResourceViews[4], 0, 0, 0};
 	m_Devcon->CSSetShaderResources(0, BUFFER_COUNT, shrsv);
 
 	// Bind the UAV for input
@@ -130,10 +130,24 @@ void D3DClass::PreparePostPass()
 
 }
 
-void D3DClass::PrepareLightPass(ID3D11ShaderResourceView* lightShaderResource)
+void D3DClass::PrepareDepthPass()
+{
+	/*
+	This function should unbind all current RTVs.
+	The only resource bound should be the second depth buffer, as a depth
+	stencil resource
+	*/
+	ID3D11RenderTargetView* rtvs[4] = { 0, 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, m_depthStencilView[1]);
+
+
+
+}
+
+void D3DClass::PrepareLightPass()
 {
 	SetBackBuffer(); // Draw into the last rendertargetview, which will be used in the post process pass
-	SetShaderResourceViews(lightShaderResource); // Make the geo-data avaiable for ps
+	SetShaderResourceViews(); // Make the geo-data avaiable for ps
 }
 
 void D3DClass::PrePareGeoPass()
@@ -145,18 +159,21 @@ void D3DClass::PrePareGeoPass()
 
 void D3DClass::SetBackBuffer()
 {
-	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[5], 0, 0, 0 };
-	m_Devcon->OMSetRenderTargets(4, rtvs, NULL);
-
+	ID3D11RenderTargetView* rtvs[4] = { m_renderTargetViews[4], 0, 0, 0 };
+	m_Devcon->OMSetRenderTargets(4, rtvs, NULL); // unbind all depth buffers
 }
 
-void D3DClass::SetShaderResourceViews(ID3D11ShaderResourceView* lightShaderResource)
+void D3DClass::SetShaderResourceViews()
 {
-	ID3D11ShaderResourceView* shrvs[5];
+	ID3D11ShaderResourceView* shrv[6] = {};
 	for (int i = 0; i < 4; i++)
-		shrvs[i] = m_shaderResourceViews[i];
-	shrvs[4] = lightShaderResource;
-	m_Devcon->PSSetShaderResources(0, 5, shrvs);
+	{
+		shrv[i] = m_shaderResourceViews[i];
+	}
+	shrv[4] = m_shadowResourceView[0]; // manually copy in the depth stencil texture into the the resources
+	shrv[5] = m_shadowResourceView[1]; // shadow map
+
+	m_Devcon->PSSetShaderResources(0, 6, shrv);
 }
 
 void D3DClass::DefualtState()
@@ -298,18 +315,66 @@ bool D3DClass::Intialize()
 	depthBufferDesc.Height = (float)W_HEIGHT;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
+	// configure stencil
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	// create the texture for the z-buffer
-	hr = m_Device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
-	if (FAILED(hr))
-		MessageBox(m_handle, L"Failed to create texture for z-buffer", L"Z-buffer failure", MB_OK);
+	// configure shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	/*
+
+	In short, the following block will create two textures, and give them two views, one for being bound as a 
+	shader resource for sampling from, and one as a depth stencil.
+
+	*/
+
+	// Create the textures for the depth / shadow buffers 
+	for (int i = 0; i < 2; i++)
+	{
+		hr = m_Device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer[i]);
+		if (FAILED(hr))
+			MessageBox(m_handle, L"Failed to create texture for z-buffer", L"Z-buffer failure", MB_OK);
+
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		//Create the stencil
+		hr = m_Device->CreateDepthStencilView(m_depthStencilBuffer[i], &depthStencilViewDesc, &m_depthStencilView[i]);
+		if (FAILED(hr))
+			MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
+
+
+		// Create shader resource view
+		hr = m_Device->CreateShaderResourceView(m_depthStencilBuffer[i], &shaderResourceViewDesc, &m_shadowResourceView[i]);
+		if (FAILED(hr))
+			MessageBox(m_handle, L"Failed to create shader resource view for shadowmap", L"Error z-buffer", MB_OK);
+
+	}
+
+
+
+
+
+
+
+
+
+
 
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 	depthStencilDesc.DepthEnable = true;
@@ -339,17 +404,6 @@ bool D3DClass::Intialize()
 	// set state
 	m_Devcon->OMSetDepthStencilState(m_depthStencilState, 1);
 
-	// configure stencil
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	//Create the stencil
-	hr = m_Device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	if (FAILED(hr))
-		MessageBox(m_handle, L"Failed to create depth stencil view", L"Error z-buffer", MB_OK);
 
 	 //Configure rasterizer
 	D3D11_RASTERIZER_DESC rasterDesc;
@@ -424,7 +478,8 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 	m_Devcon->ClearUnorderedAccessViewFloat(m_backBuffer, color);
 
 	// Clear the depth buffer
-	 m_Devcon->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	for (int i = 0; i < 2; i++)
+		 m_Devcon->ClearDepthStencilView(m_depthStencilView[0], D3D11_CLEAR_DEPTH, 1.0f, 0);
 	// TODO
 
 
@@ -444,10 +499,14 @@ void D3DClass::ShutDown()
 		m_rasterState = 0;
 	}
 
+
 	if (m_depthStencilView)
 	{
-		m_depthStencilView->Release();
-		m_depthStencilView = 0;
+		for (int i = 0; i < 2; i++)
+		{
+			m_depthStencilView[i]->Release();
+			m_depthStencilView[i] = 0;
+		}
 	}
 
 	if (m_depthStencilState)
@@ -458,8 +517,21 @@ void D3DClass::ShutDown()
 
 	if (m_depthStencilBuffer)
 	{
-		m_depthStencilBuffer->Release();
-		m_depthStencilBuffer = 0;
+		for (int i = 0; i < 2; i++)
+		{
+			m_depthStencilBuffer[i]->Release();
+			m_depthStencilBuffer[i] = 0;
+			
+		}
+	}
+
+	if (m_shadowResourceView)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			m_shadowResourceView[i]->Release();
+			m_shadowResourceView[i] = 0;
+		}
 	}
 
 	if (m_renderTargetViews)

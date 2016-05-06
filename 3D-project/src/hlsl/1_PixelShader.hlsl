@@ -10,7 +10,7 @@ struct PixelInput
 	float4 PositionNDCS: SV_Position;
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
-	float3 PositionWS : POSITIONWS;
+	float4 Position : POSITIONWS;
 	float4 PositionCS : POSITIONCS;
 };
 
@@ -29,12 +29,10 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 {
 	PixelOut output;
 
-	float depthValue = input.PositionCS.z / input.PositionCS.w;
-
 	output.normal = normalize(float4(input.NormalWS, 0.0));
 	output.diffuse = Kd*Texture.Sample(ss, input.Tex);
-	output.specular = float4(Ks.xy, depthValue, 32);
-	output.position = float4(input.PositionWS, 1.0f);
+	output.specular = float4(Ks.xyz, 32);
+	output.position = input.Position;
 
 	return output;
 }

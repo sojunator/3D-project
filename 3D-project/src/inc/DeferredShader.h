@@ -18,7 +18,6 @@ private:
 		DirectX::XMMATRIX world;
 		DirectX::XMMATRIX view;
 		DirectX::XMMATRIX projection;
-		DirectX::XMMATRIX viewLight;
 	};
 
 	struct VerticeData
@@ -30,7 +29,7 @@ private:
 	ID3D11PixelShader* m_pixelShader;
 	ID3D11InputLayout* m_layout;
 	ID3D11Buffer* m_matrixBuffer;
-	ID3D11SamplerState* m_sampleStateWrap, * m_sampleStateClamp;
+	ID3D11SamplerState* m_sampleState;
 
 	void InitializeShader(ID3D11Device* device, HWND shadername, WCHAR* vsFilename, WCHAR* psFilename);
 	void ShutdownShader();

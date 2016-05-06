@@ -124,10 +124,7 @@
     <FxCompile Include="src\hlsl\1_passThroughCompute.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="src\hlsl\1_depth_VertexShader.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="src\hlsl\1_depth_PixelShader.hlsl">
+    <FxCompile Include="src\hlsl\1_depthVertex.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

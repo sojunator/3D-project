@@ -22,21 +22,21 @@ class Graphics
 {
 public:
 	Graphics(HWND wndHandle);
-	void Render(float dt, bool* keys, POINT mousePos);
-	void Update(float dt);
+	bool Render(float dt, bool* keys, POINT mousePos);
+	bool Update(float dt);
 	void Shutdown();
 
 private:
 	std::vector<Light> m_lights;
+	float m_nrOfLights;
 	D3DClass* m_DirectX;
 	~Graphics();
 	CameraClass* m_Camera;
 	Model* m_Model;
 	TerrainClass* m_map;
 	ShaderClass* m_TerrainShader;
-	ShaderClass* m_depthShaderOBJ;
-	ShaderClass* m_depthShaderTER;
 	ShaderClass* m_Shader;
+	ShaderClass* m_depthShader;
 	DeferredShader* m_ShaderLight;
 	ComputeShader* m_GuassianShader;
 	ComputeShader* m_passThrough;
