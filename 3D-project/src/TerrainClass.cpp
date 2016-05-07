@@ -547,7 +547,7 @@ void TerrainClass::InitializeBuffers(ID3D11Device* device)
 
 	for (int i = 0; i < m_vertexCount; i++)
 	{
-		vertices[i].position = DirectX::XMFLOAT4(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z, 1.0f);
+		vertices[i].position = DirectX::XMFLOAT3(m_terrainModel[i].x, m_terrainModel[i].y, m_terrainModel[i].z);
 		vertices[i].texture = DirectX::XMFLOAT2(m_terrainModel[i].tu, m_terrainModel[i].tv);
 		vertices[i].normal = DirectX::XMFLOAT3(m_terrainModel[i].nx, m_terrainModel[i].ny, m_terrainModel[i].nz);
 		vertices[i].tangent = DirectX::XMFLOAT3(m_terrainModel[i].tx, m_terrainModel[i].ty, m_terrainModel[i].tz);

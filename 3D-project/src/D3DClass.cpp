@@ -479,7 +479,7 @@ void D3DClass::InitScene(float r, float g, float b, float a)
 
 	// Clear the depth buffer
 	for (int i = 0; i < 2; i++)
-		 m_Devcon->ClearDepthStencilView(m_depthStencilView[0], D3D11_CLEAR_DEPTH, 1.0f, 0);
+		 m_Devcon->ClearDepthStencilView(m_depthStencilView[i], D3D11_CLEAR_DEPTH, 1.0f, 0);
 	// TODO
 
 

@@ -54,7 +54,7 @@ Graphics::Graphics(HWND handle)
 	{
 		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(7, 10.f, 3);
 		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(0.f, 1.f, 0.f, 1.0f);
-		float ambientStrenght = 0.1f / AMOUNT_OF_LIGHTS;
+		float ambientStrenght = 0.67f / AMOUNT_OF_LIGHTS;
 		Light tempLight = Light(DirectX::XMFLOAT3(0.f, 0.f, 0.f), lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
 		tempLight.CreateConstantBuffer();
 		m_lights.push_back(tempLight);
@@ -114,6 +114,8 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
 
+	m_map->Render(m_DirectX->GetDeviceContext());
+	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
 
 	// Third pass, lights
 	m_DirectX->DefualtState();

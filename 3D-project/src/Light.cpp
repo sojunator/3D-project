@@ -25,7 +25,7 @@ void Light::CreateConstantBuffer()
 	cbData.m_cameraPos = m_cameraPos;
 
 	cbData.m_lightDir = m_lightDir;
-	cbData.m_lightView = m_lightView;
+	cbData.m_lightView = DirectX::XMMatrixTranspose(m_lightView); // dis dont make any sense willie
 	cbData.m_projection = m_projection;
 
 	D3D11_BUFFER_DESC cbDesc;
@@ -60,9 +60,11 @@ void Light::updateLight(DirectX::XMFLOAT3 lightPos, DirectX::XMFLOAT4 lightColou
 
 void Light::CreateViewLight()
 {
-	DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.f, 1.f, 0.f);
-	m_lightView = DirectX::XMMatrixLookAtLH(DirectX::XMLoadFloat3(&m_lightPos), DirectX::XMLoadFloat3(&m_lightDir), DirectX::XMLoadFloat3(&up));
-	m_lightView = DirectX::XMMatrixTranspose(m_lightView); 
+	DirectX::XMVECTOR up = DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(0.f, 1.0f, 0.0f));
+	DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m_lightPos);
+	DirectX::XMVECTOR lookAt = DirectX::XMLoadFloat3(&m_lightDir);
+	m_lightView = DirectX::XMMatrixLookAtLH(position, lookAt, up);
+
 }
 
 void Light::CreateProjection()
