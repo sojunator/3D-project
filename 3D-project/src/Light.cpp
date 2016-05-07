@@ -25,8 +25,8 @@ void Light::CreateConstantBuffer()
 	cbData.m_cameraPos = m_cameraPos;
 
 	cbData.m_lightDir = m_lightDir;
-	cbData.m_lightView = DirectX::XMMatrixTranspose(m_lightView); // dis dont make any sense willie
-	cbData.m_projection = m_projection;
+	cbData.m_lightView = DirectX::XMMatrixTranspose(m_lightView); // dis dont make any sense willie1
+	cbData.m_projection = DirectX::XMMatrixTranspose(m_projection);
 
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(cbData);
@@ -72,7 +72,7 @@ void Light::CreateProjection()
 	float fieldOfView = 3.141592654f / 4.0f;
 	float screenAspect = (float)W_WITDH / (float)W_HEIGHT;
 	m_projection = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, 0.5f, 2000.0f);
-	m_projection = DirectX::XMMatrixTranspose(m_projection);
+
 }
 
 Light::Light()

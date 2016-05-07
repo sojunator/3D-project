@@ -5,7 +5,7 @@ Texture2D PositionTexture	: register(t3);
 Texture2D depthTexture		: register(t4);
 Texture2D lightDepthTexture	: register(t5);
 
-SamplerState ss : register(s0);
+SamplerState SamplerClamp : register(s0);
 
 
 
@@ -29,10 +29,11 @@ struct PixelOut
 struct PixelInput
 {
 	float4 Position : SV_Position;
+	matrix proj : PROJ;
 };
 
 
-float2 PS_main(PixelInput input) : SV_Target0
+float4 PS_main(PixelInput input) : SV_Target0
 {
 	PixelOut output;
 
@@ -42,8 +43,7 @@ float2 PS_main(PixelInput input) : SV_Target0
 	float4 position = PositionTexture.Load(float3(input.Position.xy, 0), 0);
 	float4 lightDepth = lightDepthTexture.Load(float3(input.Position.xy, 0), 0);
 	float4 depth = depthTexture.Load(float3(input.Position.xy, 0), 0);
-
-	float bias = 0.01f;
+	float bias = 0.001f;
 	float4 ambient = m_ambientStrenght * m_lightColour;
 
 	matrix ligthViewProj = mul(m_lightView, m_projection);
@@ -59,44 +59,30 @@ float2 PS_main(PixelInput input) : SV_Target0
 	projectTexCoord.x = (projectTexCoord.x * 0.5) + 0.5f;
 	projectTexCoord.y = (projectTexCoord.y * 0.5) + 0.5f;
 
-	return projectTexCoord;
-
-	float depthValue = depthTexture.Sample(ss, projectTexCoord).w;
-	float lightDepthValue = lightDepthTexture.Sample(ss, projectTexCoord).r;
-	depthValue -= bias;
-	if (depthValue < lightDepthValue)
+	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 	{
-		float3 lightDir = normalize(m_lightPos - position.xyz);
-		float diff = specular.xyz * max(dot(normal, lightDir), 0);
-		float4 diffuse = diff * m_lightColour;
+		float depthValue = depth.x;
 
-		float3 viewPos = m_cameraPos.xyz;
-		float SpecularStrenght = 0.5;
-		float3 viewDir = normalize(viewPos - position.xyz);
-		float3 reflectDir = reflect(-lightDir, normal);
-		float reflection = max(dot(viewDir, reflectDir), 0.0f);
-		float spec = pow(reflection, 16);
-		float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
+		float lightDepthValue = lightDepthTexture.Sample(SamplerClamp, projectTexCoord).r;
 
-		return tex  * (ambient + diffuse) + float4(specularValue, 1.0f);
+		depthValue -= bias;
+
+		if (depthValue < lightDepthValue)
+		{
+			float3 lightDir = normalize(m_lightPos - position.xyz);
+			float diff = specular.xyz * max(dot(normal, lightDir), 0);
+			float4 diffuse = diff * m_lightColour;
+
+			float3 viewPos = m_cameraPos.xyz;
+			float SpecularStrenght = 0.5;
+			float3 viewDir = normalize(viewPos - position.xyz);
+			float3 reflectDir = reflect(-lightDir, normal);
+			float reflection = max(dot(viewDir, reflectDir), 0.0f);
+			float spec = pow(reflection, 16);
+			float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
+
+			return tex  * (ambient + diffuse) + float4(specularValue, 1.0f);
+		}
 	}
-	return tex;
+	return tex  * ambient;
 }
-
-
-//}
-//	float4 ambient = m_ambientStrenght * m_lightColour;
-//	float3 lightDir = normalize(m_lightPos - position.xyz);
-//	float diff = specular.xyz * max(dot(normal, lightDir), 0);
-//	float4 diffuse = diff * m_lightColour;
-//
-//	float3 viewPos = m_cameraPos.xyz;
-//	float SpecularStrenght = 0.5;
-//	float3 viewDir = normalize(viewPos - position.xyz);
-//	float3 reflectDir = reflect(-lightDir, normal);
-//	float reflection = max(dot(viewDir, reflectDir), 0.0f);
-//	float spec = pow(reflection, 16);
-//	float3 specularValue = SpecularStrenght * specular.xyz * spec * m_lightColour.xyz;
-//
-//	return color  * (ambient + diffuse) + float4(specularValue, 1.0f);
-//}

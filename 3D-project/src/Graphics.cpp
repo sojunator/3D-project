@@ -22,7 +22,7 @@ Graphics::Graphics(HWND handle)
 	m_Camera = new CameraClass;
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f));
+	m_Camera->SetPosition(DirectX::XMFLOAT3(7, 10.f, 3));
 
 	// Create the model object.
 	m_Model = new Model(m_DirectX->GetDevice());
@@ -52,10 +52,10 @@ Graphics::Graphics(HWND handle)
 	srand(time(NULL));
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
-		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(7, 10.f, 3);
-		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(0.f, 1.f, 0.f, 1.0f);
-		float ambientStrenght = 0.67f / AMOUNT_OF_LIGHTS;
-		Light tempLight = Light(DirectX::XMFLOAT3(0.f, 0.f, 0.f), lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
+		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(3.0f, 4.0f, 1.0f);
+		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.f, 1.1f, 1.0f);
+		float ambientStrenght = 0.3f / AMOUNT_OF_LIGHTS;
+		Light tempLight = Light(DirectX::XMFLOAT3(3.0f, 2.0f, 5.0f), lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
 		tempLight.CreateConstantBuffer();
 		m_lights.push_back(tempLight);
 	}
@@ -70,7 +70,7 @@ bool Graphics::Update(float dt)
 
 bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 {
-	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translate;
 
 	m_Camera->HandleKeyInput(keys, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
@@ -99,6 +99,8 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 		}
 	}
 
+	translate = DirectX::XMMatrixTranslation(3.0f, 2.0f, 5.0f);
+
 	// First pass, geo
 	m_DirectX->PrePareGeoPass();
 	m_map->Render(m_DirectX->GetDeviceContext());
@@ -106,16 +108,16 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
 
 
 	// Second pass, from lights perspective
 	m_DirectX->PrepareDepthPass();
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
+	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
 
 	m_map->Render(m_DirectX->GetDeviceContext());
-	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
+	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
 
 	// Third pass, lights
 	m_DirectX->DefualtState();
