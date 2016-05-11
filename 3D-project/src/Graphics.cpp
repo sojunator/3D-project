@@ -70,7 +70,7 @@ bool Graphics::Update(float dt)
 
 bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 {
-	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translate;
+	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translate, rotate;
 
 	m_Camera->HandleKeyInput(keys, dt);
 	m_DirectX->GetWorldMatrix(worldMatrix);
@@ -100,7 +100,10 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	}
 
 	translate = DirectX::XMMatrixTranslation(3.0f, 2.0f, 5.0f);
-
+	static float rotation;
+	rotation += 0.01f;
+	float rads = (3.14156 / 180.0f) * rotation;
+	rotate = DirectX::XMMatrixRotationY(rads);
 	// First pass, geo
 	m_DirectX->PrePareGeoPass();
 	m_map->Render(m_DirectX->GetDeviceContext());
@@ -108,13 +111,13 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
+	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), rotate*worldMatrix*translate, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
 
 
 	// Second pass, from lights perspective
 	m_DirectX->PrepareDepthPass();
 	m_Model->Render(m_DirectX->GetDeviceContext());
-	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix*translate, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
+	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), rotate*worldMatrix*translate, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
 
 	m_map->Render(m_DirectX->GetDeviceContext());
 	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
