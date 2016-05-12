@@ -41,6 +41,7 @@ public:
 	void Render(ID3D11DeviceContext* devcon);
 	void Shutdown();
 	int GetIndexCount() { return m_indexCount; }
+	float GetYcord(DirectX::XMFLOAT3 pos);
 private:
 	void Renderbuffers(ID3D11DeviceContext* devcon);
 	void InitializeBuffers(ID3D11Device* device);

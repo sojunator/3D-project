@@ -17,7 +17,7 @@ public:
 	void Render(POINT mousePos);
 	void GetViewMatrix(DirectX::XMMATRIX& view);
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix);
-
+	void SetY(float Y);
 	~CameraClass();
 private:
 

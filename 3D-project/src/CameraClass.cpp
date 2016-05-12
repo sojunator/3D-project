@@ -3,7 +3,7 @@
 
 CameraClass::CameraClass()
 {
-	m_position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_position = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 
 	m_rotationX = 0.0f;
 	m_rotationY = 0.0f;
@@ -30,6 +30,10 @@ DirectX::XMFLOAT3 CameraClass::GetPosition()
 	return m_position;
 }
 
+void CameraClass::SetY(float Y)
+{
+	m_position.y = Y + 1.0f;
+}
 
 void CameraClass::Render(POINT mouseOffset)
 {

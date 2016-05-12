@@ -70,8 +70,6 @@ float4 PS_main(PixelInput input) : SV_Target0
 		float depthValue = depthTest;
 
 		float lightDepthValue = lightDepthTexture.Sample(SamplerClamp, projectTexCoord).r;
-		//return lightDepthValue;
-		//return float4(lightDepthValue / 2 , depthValue / 2, 0.0f, 1.0f);
 		depthValue -= bias;
 
 		if (depthValue < lightDepthValue)

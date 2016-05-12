@@ -5,6 +5,19 @@
 #include <vector>
 #include <math.h>
 
+float TerrainClass::GetYcord(DirectX::XMFLOAT3 pos)
+{
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			int index = (m_width*i) + j;
+			if (m_heightMap[index].x == int(pos.x) && m_heightMap[index].z == int(pos.z))
+				return m_heightMap[index].y;
+		}
+	}
+
+}
 
 TerrainClass::TerrainClass()
 {
@@ -522,7 +535,7 @@ void TerrainClass::Initalize(ID3D11Device* dev, std::string setupFilename)
 	CalculateNormals();
 	BuildTerrainModel();
 	CalculateTerrainVectors();
-	ShutdownHeightMap();
+	//ShutdownHeightMap();
 
 	// Create buffers
 	InitializeBuffers(dev);
