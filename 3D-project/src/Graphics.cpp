@@ -52,7 +52,7 @@ Graphics::Graphics(HWND handle)
 	srand(time(NULL));
 	for (int i = 0; i < AMOUNT_OF_LIGHTS; i++)
 	{
-		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(3.0f, 4.0f, 1.0f);
+		DirectX::XMFLOAT3 lightPos = DirectX::XMFLOAT3(3.0f, 4.0f, 0.0f);
 		DirectX::XMFLOAT4 lightColour = DirectX::XMFLOAT4(1.0f, 1.f, 1.1f, 1.0f);
 		float ambientStrenght = 0.3f / AMOUNT_OF_LIGHTS;
 		Light tempLight = Light(DirectX::XMFLOAT3(3.0f, 2.0f, 5.0f), lightPos, lightColour, ambientStrenght, m_Camera->GetPosition(), m_DirectX->GetDevice());
@@ -101,9 +101,9 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 	translate = DirectX::XMMatrixTranslation(3.0f, 2.0f, 5.0f);
 	static float rotation;
-	rotation += 0.01f;
+	rotation += 0.1f;
 	float rads = (3.14156 / 180.0f) * rotation;
-	rotate = DirectX::XMMatrixRotationY(rads);
+	rotate = DirectX::XMMatrixRotationZ(rads);
 	// First pass, geo
 	m_DirectX->PrePareGeoPass();
 	m_map->Render(m_DirectX->GetDeviceContext());

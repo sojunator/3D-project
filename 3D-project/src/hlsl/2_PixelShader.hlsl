@@ -45,7 +45,7 @@ float4 PS_main(PixelInput input) : SV_Target0
 	float4 depth = depthTexture.Load(float3(input.Position.xy, 0), 0);
 
 
-	float bias = 0.015f;
+	float bias = 0.0015f;
 
 	float4 ambient = m_ambientStrenght * m_lightColour;
 
@@ -55,9 +55,11 @@ float4 PS_main(PixelInput input) : SV_Target0
 	float4 lightViewPosition = mul(position, ligthViewProj);
 
 	float2 projectTexCoord; 
+	float depthTest;
 
 	projectTexCoord.x = lightViewPosition.x / lightViewPosition.w;
 	projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w;
+	depthTest = lightViewPosition.z / lightViewPosition.w;
 
 	projectTexCoord.x = (projectTexCoord.x * 0.5) + 0.5f;
 	projectTexCoord.y = (projectTexCoord.y * 0.5) + 0.5f;
@@ -65,10 +67,11 @@ float4 PS_main(PixelInput input) : SV_Target0
 
 	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 	{
-		float depthValue = depth.x;
+		float depthValue = depthTest;
 
 		float lightDepthValue = lightDepthTexture.Sample(SamplerClamp, projectTexCoord).r;
-
+		//return lightDepthValue;
+		//return float4(lightDepthValue / 2 , depthValue / 2, 0.0f, 1.0f);
 		depthValue -= bias;
 
 		if (depthValue < lightDepthValue)
@@ -88,5 +91,5 @@ float4 PS_main(PixelInput input) : SV_Target0
 			return tex  * (ambient + diffuse) + float4(specularValue, 1.0f);
 		}
 	}
-	return tex  * ambient;
+	return tex * ambient;
 }

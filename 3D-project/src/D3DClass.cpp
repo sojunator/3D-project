@@ -315,7 +315,7 @@ bool D3DClass::Intialize()
 	depthBufferDesc.Height = (float)W_HEIGHT;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -324,7 +324,7 @@ bool D3DClass::Intialize()
 
 	// configure stencil
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
@@ -332,7 +332,7 @@ bool D3DClass::Intialize()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	/*
