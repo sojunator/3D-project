@@ -18,7 +18,8 @@ struct GeometryInput
 	float2 Tex : TEXCOORD0;
 	float3 NormalWS : NORMALWS;
 	float4 PositionWS : POSITIONWS;
-	float4 PositionVS : POSITIONVS;
+	float3 PositionVS : POSITIONVS;
+	float3 NormalVS : NORMALVS;
 };
 
 GeometryInput VS_main( VertexInput input ) 
@@ -36,8 +37,11 @@ GeometryInput VS_main( VertexInput input )
 
 	output.PositionVS = mul(output.PositionWS, viewMatrix);
 
+
+
 	output.Tex = input.Tex;
 	output.NormalWS = normalize(mul(input.Normal, (float3x3)worldMatrix));
+	output.NormalVS = mul(output.NormalWS, viewMatrix);
 
 	return output;
 }

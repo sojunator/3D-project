@@ -89,5 +89,5 @@ float4 PS_main(PixelInput input) : SV_Target0
 			return tex  * (ambient + diffuse) + float4(specularValue, 1.0f);
 		}
 	}
-	return tex;
+	return tex * ambient;
 }
