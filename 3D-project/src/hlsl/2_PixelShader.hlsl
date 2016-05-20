@@ -44,8 +44,7 @@ float4 PS_main(PixelInput input) : SV_Target0
 	float4 lightDepth = lightDepthTexture.Load(float3(input.Position.xy, 0), 0);
 	float4 depth = depthTexture.Load(float3(input.Position.xy, 0), 0);
 
-
-	float bias = 0.0015f;
+	float bias = 0.00165;
 
 	float4 ambient = m_ambientStrenght * m_lightColour;
 
@@ -64,12 +63,12 @@ float4 PS_main(PixelInput input) : SV_Target0
 	projectTexCoord.x = (projectTexCoord.x * 0.5) + 0.5f;
 	projectTexCoord.y = (projectTexCoord.y * 0.5) + 0.5f;
 
-
 	if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 	{
 		float depthValue = depthTest;
 
 		float lightDepthValue = lightDepthTexture.Sample(SamplerClamp, projectTexCoord).r;
+
 		depthValue -= bias;
 
 		if (depthValue < lightDepthValue)

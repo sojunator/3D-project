@@ -88,23 +88,23 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	
 	m_Camera->Render(mousePos);
 
-	static bool wireframe = false;
-	if (wireframe)
-	{
-		m_DirectX->WireFrameState();
-		if (keys[VK_PRIOR])
-		{
-			wireframe = false;
-		}
-	}
-	else
-	{
-		m_DirectX->DefualtState();
-		if (keys[VK_NEXT])
-		{
-			wireframe = true;
-		}
-	}
+	//static bool wireframe = false;
+	//if (wireframe)
+	//{
+	//	m_DirectX->WireFrameState();
+	//	if (keys[VK_PRIOR])
+	//	{
+	//		wireframe = false;
+	//	}
+	//}
+	//else
+	//{
+	//	m_DirectX->DefualtState();
+	//	if (keys[VK_NEXT])
+	//	{
+	//		wireframe = true;
+	//	}
+	//}
 
 	translate = DirectX::XMMatrixTranslation(3.0f, 2.0f, 7.0f);
 	static float rotation;
@@ -120,7 +120,7 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 	m_Model->Render(m_DirectX->GetDeviceContext());
 	m_Shader->Render(m_DirectX->GetDeviceContext(), m_Model->GetIndexCount(), rotate*worldMatrix*translate, viewMatrix, projectionMatrix, m_Model->GetTexture(), NULL);
 
-
+	m_DirectX->WireFrameState();
 	// Second pass, from lights perspective
 	m_DirectX->PrepareDepthPass();
 	m_Model->Render(m_DirectX->GetDeviceContext());
@@ -128,6 +128,7 @@ bool Graphics::Render(float dt, bool* keys, POINT mousePos)
 
 	m_map->Render(m_DirectX->GetDeviceContext());
 	m_depthShader->Render(m_DirectX->GetDeviceContext(), m_map->GetIndexCount(), worldMatrix, m_lights[0].GetLightView(), projectionMatrix, m_Model->GetTexture(), NULL);
+	m_DirectX->DefualtState();
 
 	// Third pass, lights
 	m_DirectX->DefualtState();
