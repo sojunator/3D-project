@@ -26,7 +26,7 @@ PixelOut PS_main(PixelInput input) : SV_TARGET
 	PixelOut output;
 
 	float4 bumpMap = NormalMap.Sample(ss, input.tex);
-	float4 bumpNormal = normalize(float4(bumpMap.x * input.tangent + bumpMap.y * input.binormal + bumpMap.z*input.normal, 0.0f));
+	float4 bumpNormal = normalize(float4(bumpMap.x * input.tangent + bumpMap.y * input.binormal + bumpMap.z*input.normal.xyz, 0.0f));
 
 
 	output.position = input.positionWS;

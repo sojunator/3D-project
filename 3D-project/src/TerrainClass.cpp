@@ -187,7 +187,7 @@ void TerrainClass::CalculateTangentBinormal(verts vertex1, verts vertex2, verts 
 	tvVector[0] = vertex2.texture.y - vertex1.texture.y;
 	tvVector[1] = vertex3.texture.y - vertex1.texture.y;
 
-	// calculate the invers matrix for uv
+	// calculate the inverse matrix for uv
 	den = 1.0f / (tuVector[0]*tvVector[1] - tuVector[1]*tvVector[0]);
 
 	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
